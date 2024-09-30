@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="principal">#609F13</color>
+    <color name="brancoVerde">#EDFFEC</color>
+    <color name="verdeForte">#00DD3B</color>
+    <color name="buttonDisable">#9EC19E</color>
+    <color name="txtDisable">#717171</color>
+    <color name="vermelhoCancel">#FAC9C9</color>
+</resources>
