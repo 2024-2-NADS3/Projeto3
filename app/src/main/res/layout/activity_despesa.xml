@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="@color/brancoVerde"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReceitaActivity">
+    android:background="@color/vermelhoCancel"
+    tools:context=".DespesaActivity">
 
     <TextView
-        android:id="@+id/btn_voltar_receita"
+        android:id="@+id/btn_voltar_despesa"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:fontFamily="@font/saira"
@@ -26,11 +26,11 @@
         app:layout_constraintVertical_bias="0.023" />
 
     <TextView
-        android:id="@+id/txt_title_receita"
+        android:id="@+id/txt_title_despesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/saira"
-        android:text="Receita"
+        android:text="Despesa"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="40sp"
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_title_receita"
+        app:layout_constraintTop_toBottomOf="@+id/txt_title_despesa"
         app:layout_constraintVertical_bias="0.041">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -151,10 +151,10 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_add_receita"
+        android:id="@+id/btn_add_despesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/verdeForte"
+        android:backgroundTint="@color/vermelhoForte"
         android:gravity="center"
         android:text="Adicionar"
         android:textAlignment="center"

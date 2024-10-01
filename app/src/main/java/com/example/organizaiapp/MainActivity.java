@@ -219,7 +219,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         linearDespesa.setOnClickListener(v->{
-            Toast.makeText(MainActivity.this, "Foi para tela de despesa", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, DespesaActivity.class);
+            startActivity(i);
+            dialog.cancel();
         });
 
         dialog.show();
