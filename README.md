@@ -12,7 +12,7 @@
 
 # ⭐ Grupo OrganizAi
 
-## Integrantes: <a href="https://www.linkedin.com/in/giovane-estevan/">Giovane Estevan</a>, <a href="https://www.linkedin.com/in/matheus-emiliano/">Matheus Emiliano</a>, <a href="https://www.linkedin.com/in/guilherme-carvalho-da-silva-7996b0197/">Guilherme Carvalho</a>, <a href="https://www.linkedin.com/in/mmoura97/">Matheus Moura</a>
+## Integrantes: <a href="https://www.linkedin.com/in/giovane-estevan/">Giovane Estevan</a>, <a href="https://www.linkedin.com/in/matheus-emiliano/">Matheus Emiliano</a>, <a href="https://www.linkedin.com/in/guilherme-carvalho-da-silva-7996b0197/">Guilherme Silva</a>, <a href="https://www.linkedin.com/in/mmoura97/">Matheus Moura</a>
 
 ## Professores Orientadores: <a href="https://www.linkedin.com/in/victorbarq/">Victor Quiroz</a>, <a href="https://www.linkedin.com/in/francisco-escobar/">Francisco Escobar</a>, <a href="https://www.linkedin.com/in/jos%C3%A9-carlos-buesso-jr-15462234/">José Carlos</a>
 
