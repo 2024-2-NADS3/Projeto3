@@ -17,6 +17,8 @@ AppDataSource.initialize().then(async () => {
     console.log("Data Source foi inicializado!")
 
     app.use('/users', userRoutes);
+
+    
     app.use('/quiz', quizRoutes);
 
     
