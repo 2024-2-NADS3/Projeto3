@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".activities.MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_bar_constraint"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginBottom="661dp"
+        android:background="@color/brancoVerde"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/foto_usuario"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            app:srcCompat="@color/black" />
+
+        <ImageView
+            android:id="@+id/btn_info"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.245"
+            app:layout_constraintStart_toEndOf="@+id/btn_olho_aberto"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info" />
+
+        <ImageView
+            android:id="@+id/btn_olho_aberto"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/foto_usuario"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_olho_aberto" />
+
+        <ImageView
+            android:id="@+id/btn_config"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_info"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_config" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card_beneficios_constraint"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:background="@color/brancoVerde"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_bar_constraint"
+        app:layout_constraintVertical_bias="0.0">
+
+        <View
+            android:id="@+id/banner_beneficios"
+            android:layout_width="359dp"
+            android:layout_height="151dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/banner_conners_rounded"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_banner_beneficios"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:fontFamily="@font/saira_bold"
+            android:text="A partir do seu perfil de usuário, veja quais benefícios você tem direito."
+            android:textAlignment="textStart"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/banner_beneficios"
+            app:layout_constraintEnd_toEndOf="@+id/banner_beneficios"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/banner_beneficios"
+            app:layout_constraintTop_toTopOf="@+id/banner_beneficios"
+            app:layout_constraintVertical_bias="0.132" />
+
+        <Button
+            android:id="@+id/btn_meus_beneficios"
+            android:layout_width="180dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/verdeForte"
+            android:text="Meus benefícios"
+            android:textAlignment="center"
+            android:textColor="@color/brancoVerde"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/banner_beneficios"
+            app:layout_constraintEnd_toEndOf="@+id/banner_beneficios"
+            app:layout_constraintHorizontal_bias="0.2"
+            app:layout_constraintStart_toStartOf="@+id/banner_beneficios"
+            app:layout_constraintTop_toTopOf="@+id/banner_beneficios"
+            app:layout_constraintVertical_bias="0.802" />
+
+        <ImageView
+            android:id="@+id/cadunic"
+            android:layout_width="160dp"
+            android:layout_height="106dp"
+            android:src="@drawable/cadastro_unico"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.935"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/banner_beneficios"
+            app:layout_constraintVertical_bias="0.741" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/balanco_constraint"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="270dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_beneficios_constraint"
+        app:layout_constraintVertical_bias="0.0">
+
+        <View
+            android:id="@+id/bg_balanco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/retangulo_arredondado_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_balanco_titulo"
+            android:layout_width="250dp"
+            android:layout_height="35dp"
+            android:fontFamily="@font/saira"
+            android:text="Balanço Mensal"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/bg_balanco"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/bg_balanco"
+            app:layout_constraintTop_toTopOf="@+id/bg_balanco"
+            app:layout_constraintVertical_bias="0.099" />
+
+        <TextView
+            android:id="@+id/txt_numBalanco"
+            android:layout_width="250dp"
+            android:layout_height="25dp"
+            android:fontFamily="@font/saira"
+            android:text="R$ 500,00"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/bg_balanco"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_balanco_titulo"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+        <View
+            android:id="@+id/bg_selected"
+            android:layout_width="120dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="43dp"
+            android:background="@drawable/banner_conners_rounded"
+            android:backgroundTint="@color/verdeForte"
+            android:foregroundGravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_receita_titulo"
+            app:layout_constraintEnd_toEndOf="@+id/txt_receita_titulo"
+            app:layout_constraintHorizontal_bias="0.58"
+            app:layout_constraintStart_toStartOf="@+id/txt_receita_titulo"
+            app:layout_constraintTop_toTopOf="@+id/txt_receita_titulo"
+            app:layout_constraintVertical_bias="0.19999999" />
+
+        <TextView
+            android:id="@+id/txt_receita_titulo"
+            android:layout_width="150dp"
+            android:layout_height="70dp"
+            android:fontFamily="@font/saira"
+            android:text="Receitas"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/bg_balanco"
+            app:layout_constraintHorizontal_bias="0.13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_numBalanco" />
+
+        <TextView
+            android:id="@+id/txt_receita_valor"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/saira"
+            android:text="R$ 300,00"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.13"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_despesa_titulo"
+            android:layout_width="150dp"
+            android:layout_height="70dp"
+            android:fontFamily="@font/saira"
+            android:text="Despesas"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/bg_balanco"
+            app:layout_constraintHorizontal_bias="0.89"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_numBalanco"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <TextView
+            android:id="@+id/txt_despesa_valor"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/saira"
+            android:text="R$ 200,00"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.89"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/registros_constraint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="430dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanco_constraint">
+
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@color/brancoVerde"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+            <LinearLayout
+                android:id="@+id/linear_meses"
+                android:layout_marginHorizontal="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <ScrollView
+            android:id="@+id/vertical_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
+            android:fillViewport="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view">
+
+            <LinearLayout
+                android:id="@+id/linear_registros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/txt_registro_vazio"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fontFamily="@font/saira"
+            android:gravity="center"
+            android:text="Não há registros para esse mês"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/retangulo_arredondado_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registros_constraint" />
+
+    <ImageView
+        android:id="@+id/btn_adicionar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/edittext_arredondado"
+        android:backgroundTint="@color/verdeForte"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/registros_constraint"
+        app:srcCompat="@drawable/mais" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
