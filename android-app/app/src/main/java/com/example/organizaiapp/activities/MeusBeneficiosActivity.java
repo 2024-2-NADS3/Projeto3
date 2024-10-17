@@ -31,26 +31,42 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
         List<BeneficioCard> registros = new ArrayList<BeneficioCard>();
         registros.add(new BeneficioCard(1L, "Bolsa Família",true, "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "));
         registros.add(new BeneficioCard(2L, "Pé de Meia",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
+        registros.add(new BeneficioCard(3L, "Cadastro Unico",true, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
+        registros.add(new BeneficioCard(4L, "Beneficio Idoso",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
+        registros.add(new BeneficioCard(5L, "Cadastro Unico",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
 
-        for (BeneficioCard registro : registros){
+
+        // Verifica se é elegivel ao beneficio ou não.
+        for (BeneficioCard registro : registros) {
             LayoutInflater inflater = LayoutInflater.from(this);
             LinearLayout card = (LinearLayout) inflater.inflate(R.layout.beneficio_card, linearRegistros, false);
-            if (registro.isElegivel()){
-                TextView txtIsElegivel = card.findViewById(R.id.txt_is_elegivel);
-                txtIsElegivel.setVisibility(View.VISIBLE);
-            }
+
             TextView nomeBeneficio = card.findViewById(R.id.txt_nome_beneficio);
             nomeBeneficio.setText(registro.getNome());
+
+            if (registro.isElegivel()) {
+                TextView txtIsElegivel = card.findViewById(R.id.txt_is_elegivel);
+                txtIsElegivel.setVisibility(View.VISIBLE);
+            } else {
+                // Deixe o card visualmente "off" mas ainda clicável
+                card.setAlpha(0.5f); // Tornar o card mais transparente para indicar que não é elegível
+            }
+
             // Adicione o card ao LinearLayout
             linearRegistros.addView(card);
 
+            // Definir ação de clique no card, mesmo para os que não são elegíveis
             card.setOnClickListener(v -> {
-                Intent i = new Intent(this, BeneficioDetalheActivity.class);
-                i.putExtra("nomeBeneficio", registro.getNome());
-                i.putExtra("descBeneficio", registro.getDescricao());
-                startActivity(i);
+                Intent intent = new Intent(MeusBeneficiosActivity.this, BeneficioDetalheActivity.class);
+                intent.putExtra("nomeBeneficio", registro.getNome());
+                intent.putExtra("descBeneficio", registro.getDescricao());
+                intent.putExtra("isElegivel", registro.isElegivel()); // Passar a elegibilidade para a próxima Activity
+                startActivity(intent);
             });
         }
+
+
+
         TextView btnVoltar = findViewById(R.id.btn_voltar_beneficios);
         btnVoltar.setOnClickListener(v -> finish());
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

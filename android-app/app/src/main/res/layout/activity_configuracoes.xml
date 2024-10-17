@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#609F13"
+    tools:context=".activities.ConfiguracoesActivity">
+
+
+
+    <!-- Botão de Voltar (ImageView) -->
+    <ImageView
+        android:id="@+id/imageBtnVoltar"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        app:srcCompat="@drawable/seta_direita"
+        android:contentDescription="Voltar"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/textViewConfig"
+        android:rotation="180"
+        android:layout_marginStart="16dp" />
+
+    <!-- Título "Configurações" -->
+
+    <TextView
+        android:id="@+id/textViewConfig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/saira_bold"
+        android:text="Configurações"
+        android:textColor="#000000"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@id/imageBtnVoltar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/imageBtnVoltar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewConfig"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!-- Container com fundo drawable para as opções -->
+    <LinearLayout
+        android:id="@+id/containeropcoes"
+        android:layout_width="match_parent"
+        android:layout_height="215dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/opcoesconfig"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <!-- Texto para Redefinir Senha -->
+        <TextView
+            android:id="@+id/TextViewResetarSenha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Redefinir Senha"
+            android:fontFamily="@font/saira_bold"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Divisória entre opções -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <!-- Texto para Sair -->
+        <TextView
+            android:id="@+id/TextViewLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sair"
+            android:fontFamily="@font/saira_bold"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Divisória entre opções -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <!-- Texto para Excluir Conta -->
+        <TextView
+            android:id="@+id/TextViewExcluirConta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/saira_bold"
+            android:padding="15dp"
+            android:text="Excluir Conta"
+            android:textColor="#F44336"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
