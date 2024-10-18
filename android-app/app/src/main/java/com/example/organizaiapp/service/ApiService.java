@@ -25,5 +25,8 @@ public interface ApiService {
 
     @POST("quiz/")
     Call<ResponseBody> criaQuizWithIsAnsweredFalse(@Body QuizRequest cadastroRequest);
+
+    @POST("quiz/")
+    Call<ResponseBody> criaQuizCompleto(@Body QuizRequest quizRequest);
 }
 

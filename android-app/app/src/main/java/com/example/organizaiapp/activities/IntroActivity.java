@@ -102,7 +102,11 @@ public class IntroActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && (response.code() == 201 || response.code() == 202)){
+                    Intent i = new Intent(IntroActivity.this, MainActivity.class);
+                    startActivity(i);
+                } else if (response.code() == 204) {
+                    Toast.makeText(IntroActivity.this, "Já existe um quiz para esse usuário!", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(IntroActivity.this, MainActivity.class);
                     startActivity(i);
                 } else {
