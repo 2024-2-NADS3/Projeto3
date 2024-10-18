@@ -15,8 +15,17 @@ export class QuizController {
             const existingQuiz = await this.quizRepository.findOneBy({ UserId: quizDto.UserId });
             
             if (existingQuiz) {
-                // Se já houver um quiz, retorna 200 com uma mensagem apropriada
-                return res.status(200).json({ message: "Um quiz já existe para este usuário"});
+                // Verifica se o requestBody é isAnswered = false
+                if (!quizDto.isAnswered) {
+                    // Se já houver um quiz e isAnswered for false, retorna 200 com uma mensagem apropriada
+                    return res.status(204).json({ message: "Um quiz já existe para este usuário e não foi respondido." });
+                } else {
+                    // Se isAnswered for true, faz o update do existingQuiz com o novo body
+                    Object.assign(existingQuiz, quizDto);
+                    const updatedQuiz = await this.quizRepository.save(existingQuiz);
+                    
+                    return res.status(200).json({ message: "Quiz atualizado com sucesso", quiz: updatedQuiz });
+                }
             }
 
             const newQuiz = new Quiz();
