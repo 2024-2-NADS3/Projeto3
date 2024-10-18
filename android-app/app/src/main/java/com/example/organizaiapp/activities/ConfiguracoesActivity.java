@@ -22,12 +22,31 @@ public class ConfiguracoesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_configuracoes);
 
         btnvoltar = findViewById(R.id.imageBtnVoltar);
+        TextViewLogout = findViewById(R.id.TextViewLogout);
+        TextViewResetarSenha = findViewById(R.id.TextViewResetarSenha);
+
 
         btnvoltar.setOnClickListener(view -> {
             Intent intent = new Intent(ConfiguracoesActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         });
+
+        TextViewLogout.setOnClickListener(view -> {
+            Intent intent = new Intent(ConfiguracoesActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        TextViewResetarSenha.setOnClickListener(view -> {
+            Intent intent = new Intent(ConfiguracoesActivity.this, RedefinirSenhaActivity.class);
+            startActivity(intent);
+        });
+
+
+
+
+
     }
 }
 

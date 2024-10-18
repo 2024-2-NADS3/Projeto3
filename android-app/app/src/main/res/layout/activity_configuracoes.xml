@@ -39,7 +39,7 @@
         android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="@id/imageBtnVoltar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toEndOf="@id/imageBtnVoltar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
