@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -23,16 +24,38 @@ import com.example.organizaiapp.R;
 import com.example.organizaiapp.adpater.CategoriaAdapter;
 //import com.example.organizaiapp.db.SqLiteHelper;
 import com.example.organizaiapp.dto.CategoriaDto;
+import com.example.organizaiapp.dto.UserDataDto;
+import com.example.organizaiapp.manager.UserSessionManager;
+import com.example.organizaiapp.service.ApiService;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DespesaActivity extends AppCompatActivity {
 
-//    private SqLiteHelper dbHelper;
+    private static final int TIPO_DESPESA = 2;
+
+    private ApiService apiService;
+
+    private Long categoriaIdSelected;
+
+    UserDataDto user;
+
+    TextInputEditText categoriaInput;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,25 +63,34 @@ public class DespesaActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_despesa);
 
-//        dbHelper = new SqLiteHelper(this);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://organizai-api-aghjahgkaucjddde.brazilsouth-01.azurewebsites.net/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        apiService = retrofit.create(ApiService.class);
 
-        TextInputEditText valorInput = findViewById(R.id.edit_input_valor);
-        TextInputEditText descInput = findViewById(R.id.edit_input_desc);
+        UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
+        String email = sessionManager.getUserEmail();
+        buscaPorUsuarioByEmail(email);
 
         TextView btnVoltar = findViewById(R.id.btn_voltar_despesa);
         btnVoltar.setOnClickListener(v -> finish());
 
-        TextInputEditText categoriaInput = findViewById(R.id.edit_input_categoria);
+        categoriaInput = findViewById(R.id.edit_input_categoria);
         categoriaInput.setOnClickListener(v -> {
             // Mostrar o BottomSheetDialog
             showBottomSheetDialog();
         });
 
+        TextInputEditText valorInput = findViewById(R.id.edit_input_valor);
+        TextInputEditText descInput = findViewById(R.id.edit_input_desc);
+
         TextInputEditText dataInput = findViewById(R.id.edit_input_data);
         dataInput.setOnClickListener(v -> showDatePicker(dataInput));
 
-        Button btnAddReceita = findViewById(R.id.btn_add_despesa);
-        btnAddReceita.setOnClickListener(v -> {
+        Button btnAddDespesa = findViewById(R.id.btn_add_despesa);
+
+        btnAddDespesa.setOnClickListener(v -> {
             if (valorInput.getText().toString().isEmpty() || descInput.getText().toString().isEmpty()
                     || categoriaInput.getText().toString().isEmpty() || dataInput.getText().toString().isEmpty()) {
                 Toast.makeText(this, "Todos os campos precisam ser preenchidos", Toast.LENGTH_LONG).show();
@@ -74,6 +106,31 @@ public class DespesaActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+    }
+
+    private void buscaPorUsuarioByEmail(String email) {
+        Call<ResponseBody> call = apiService.findUserByEmail(email);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String responseBody = response.body().string();
+                        Gson gson = new Gson();
+                        user = gson.fromJson(responseBody, UserDataDto.class);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // Tratar o caso de resposta não bem-sucedida
+                    Log.e("API Error", "Erro na resposta da API: " + response.message());
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("API Fail", "Internal error ");
+            }
         });
     }
 
@@ -100,18 +157,22 @@ public class DespesaActivity extends AppCompatActivity {
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_categorias, null);
         RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recycler_categories);
 
-        Long userId = 1L;
-        List<CategoriaDto> categoriaDtos = null;
-        CategoriaAdapter adapter = new CategoriaAdapter(categoriaDtos, categoriaDto -> {
+        // Filtra as categorias de tipo 2
+        List<CategoriaDto> categoriasTipo2 = user.getCategorias().stream()
+                .filter(categoria -> categoria.getTipo() == TIPO_DESPESA)
+                .collect(Collectors.toList());
+
+        // Cria o adapter e passa as categorias filtradas
+        CategoriaAdapter adapter = new CategoriaAdapter(categoriasTipo2, categoriaDto -> {
             // Ação quando o usuário selecionar uma categoria
-            ((TextInputEditText) findViewById(R.id.edit_input_categoria)).setText(categoriaDto.getNomeCat());
-            bottomSheetDialog.dismiss();
+            categoriaInput.setText(categoriaDto.getNomeCat());
+            categoriaIdSelected = (long) categoriaDto.getCategoriaId();
+            bottomSheetDialog.dismiss();;
         });
 
         recyclerView.setAdapter(adapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(gridLayoutManager);
-
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
     }
