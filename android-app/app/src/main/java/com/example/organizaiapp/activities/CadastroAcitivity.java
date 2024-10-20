@@ -2,7 +2,9 @@ package com.example.organizaiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -51,6 +53,7 @@ public class CadastroAcitivity extends AppCompatActivity {
         TextInputEditText inputSenha = findViewById(R.id.textInputPassword);
         TextInputEditText inputTel = findViewById(R.id.textInputTelefone);
         Button btnCadastrar = findViewById(R.id.btnCadastrar);
+        ImageButton btnVoltar = findViewById(R.id.btnVoltar);
 
         btnCadastrar.setOnClickListener(v -> {
             String nome = Objects.requireNonNull(inputNome.getText()).toString();
@@ -59,6 +62,13 @@ public class CadastroAcitivity extends AppCompatActivity {
             String senha = Objects.requireNonNull(inputSenha.getText()).toString();
             String tel = Objects.requireNonNull(inputTel.getText()).toString();
             cadastrarUser(nome, sobrenome,email,senha,tel);
+        });
+
+        btnVoltar.setOnClickListener(v ->{
+            Intent i = new Intent(CadastroAcitivity.this, LoginActivity.class);
+            startActivity(i);
+
+            finish();
         });
     }
 
