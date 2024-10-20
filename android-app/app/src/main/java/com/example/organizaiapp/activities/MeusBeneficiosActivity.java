@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,44 +29,45 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_meus_beneficios);
 
         LinearLayout linearRegistros = findViewById(R.id.linear_registros_beneficios);
-        List<BeneficioCard> registros = new ArrayList<BeneficioCard>();
-        registros.add(new BeneficioCard(1L, "Bolsa Família",true, "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "));
-        registros.add(new BeneficioCard(2L, "Pé de Meia",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
-        registros.add(new BeneficioCard(3L, "Cadastro Unico",true, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
-        registros.add(new BeneficioCard(4L, "Beneficio Idoso",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
-        registros.add(new BeneficioCard(5L, "Cadastro Unico",false, "Lorem Ipsum is simply dummy text of the printing and typesetting industry."));
+        List<BeneficioCard> registros = new ArrayList<>();
+        registros.add(new BeneficioCard(1L, "Cadastro Unico",true, "Descrição do Cadastro Unico.", R.drawable.cadastro_unico));
+        registros.add(new BeneficioCard(2L, "Pé de Meia",false, "Descrição do Pé de Meia.", R.drawable.pe_de_meia_logo));
+        registros.add(new BeneficioCard(3L, "Bolsa Família",true, "O que é?\n" +"Um programa de transferência direta de renda, destinado às famílias em situação de pobreza e extrema pobreza em todo o país, de modo que consigam superar a situação de vulnerabilidade social.\n" +"Qual o objetivo?\n"+"\u200BPromover a cidadania com garantia de renda e apoiar, por meio dos benefícios ofertados, a articulação de políticas voltadas aos beneficiários, com vistas à superação das vulnerabilidades sociais das famílias.\n"+"Regras:\n"+"São elegíveis ao Programa Bolsa Família as famílias:\n" + " - inscritas no CadÚnico; e\n"+" - cuja renda familiar per capita mensal seja igual ou inferior a R$ 218,00 (duzentos e dezoito reais).", R.drawable.bolsa_familia_logo));
+        registros.add(new BeneficioCard(4L, "Prestração Continuada(BPC)",false, "Descrição do Benefico de Prestação Continuada.", R.drawable.bcp_logo));
+        registros.add(new BeneficioCard(5L, "Fomento Rural",false, "Descrição do Benefico Fomento Rural.", R.drawable.fomento_rural));
 
-
-        // Verifica se é elegivel ao beneficio ou não.
+        // Verifica se é elegível ao benefício ou não.
         for (BeneficioCard registro : registros) {
             LayoutInflater inflater = LayoutInflater.from(this);
             LinearLayout card = (LinearLayout) inflater.inflate(R.layout.beneficio_card, linearRegistros, false);
 
             TextView nomeBeneficio = card.findViewById(R.id.txt_nome_beneficio);
+            ImageView imgBeneficio = card.findViewById(R.id.registro_icon_beneficio); // Encontre a ImageView no card
             nomeBeneficio.setText(registro.getNome());
+
+            // Define o ícone do benefício na ImageView
+            imgBeneficio.setImageResource(registro.getIconBeneficio());
 
             if (registro.isElegivel()) {
                 TextView txtIsElegivel = card.findViewById(R.id.txt_is_elegivel);
                 txtIsElegivel.setVisibility(View.VISIBLE);
             } else {
-                // Deixe o card visualmente "off" mas ainda clicável
+                // Deixe o card visualmente desligado mas ainda clicável
                 card.setAlpha(0.5f); // Tornar o card mais transparente para indicar que não é elegível
             }
 
             // Adicione o card ao LinearLayout
             linearRegistros.addView(card);
 
-            // Definir ação de clique no card, mesmo para os que não são elegíveis
             card.setOnClickListener(v -> {
                 Intent intent = new Intent(MeusBeneficiosActivity.this, BeneficioDetalheActivity.class);
                 intent.putExtra("nomeBeneficio", registro.getNome());
                 intent.putExtra("descBeneficio", registro.getDescricao());
-                intent.putExtra("isElegivel", registro.isElegivel()); // Passar a elegibilidade para a próxima Activity
+                intent.putExtra("iconBeneficio", registro.getIconBeneficio());
+                intent.putExtra("isElegivel", registro.isElegivel());
                 startActivity(intent);
             });
         }
-
-
 
         TextView btnVoltar = findViewById(R.id.btn_voltar_beneficios);
         btnVoltar.setOnClickListener(v -> finish());
@@ -76,3 +78,4 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
         });
     }
 }
+

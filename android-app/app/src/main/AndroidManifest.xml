@@ -21,7 +21,7 @@
             android:exported="false"
             />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name=".activities.ConfiguracoesActivity"
             android:exported="false"
             />
         <activity
@@ -40,7 +40,7 @@
             android:name=".activities.BeneficioDetalheActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MeusBeneficiosActivity"
+            android:name=".activities.SplashActivity"
             android:exported="false" />
         <activity
             android:name=".activities.CategoriaEspecificaActivity"
@@ -55,7 +55,7 @@
             android:name=".activities.IntroActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ConfiguracoesActivity"
+            android:name=".activities.MeusBeneficiosActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

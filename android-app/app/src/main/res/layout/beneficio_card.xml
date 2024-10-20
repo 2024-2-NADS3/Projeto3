@@ -7,59 +7,61 @@
     android:paddingHorizontal="8dp"
     android:elevation="4dp"
     android:gravity="center"
-    android:layout_marginBottom="16dp"
-    >
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="10dp">
 
-    <!-- Ícone da categoriaDto -->
+    <!-- Ícone do benefício -->
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingHorizontal="4dp">
+        android:layout_weight="0.3"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/registro_icon_beneficio"
-            android:layout_width="85dp"
-            android:layout_height="85dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:src="@drawable/ic_info"
-            android:scaleType="centerCrop" />
-
+            android:scaleType="fitCenter"
+            android:maxHeight="85dp"
+            android:maxWidth="85dp"
+            android:adjustViewBounds="true" />
     </LinearLayout>
 
-    <!-- Descrição do gasto -->
-
+    <!-- Descrição do benefício -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_weight="0.7"
         android:padding="10dp">
-    <!-- Valor do gasto -->
-    <TextView
-        android:id="@+id/txt_nome_beneficio"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.15"
-        android:text="Nome do Beneficio"
-        android:textColor="@color/black"
-        android:textSize="23sp"
-        android:gravity="center_horizontal"
-        android:fontFamily="@font/saira"
-        />
 
-    <TextView
-        android:id="@+id/txt_sabia_mais"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.2"
-        android:text="Clique e saiba mais"
-        android:textColor="@color/principal"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:gravity="center_horizontal"
-        android:fontFamily="@font/saira"
-        />
+        <!-- Nome do benefício -->
+        <TextView
+            android:id="@+id/txt_nome_beneficio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nome do Benefício"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/saira" />
 
+        <!-- Saiba mais -->
+        <TextView
+            android:id="@+id/txt_sabia_mais"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clique e saiba mais"
+            android:textColor="@color/principal"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/saira" />
+
+        <!-- Indicação de elegibilidade -->
         <TextView
             android:id="@+id/txt_is_elegivel"
             android:visibility="invisible"
@@ -70,8 +72,8 @@
             android:textSize="12sp"
             android:textStyle="bold"
             android:gravity="center_horizontal"
-            android:fontFamily="@font/saira"
-            />
+            android:fontFamily="@font/saira" />
     </LinearLayout>
 
 </LinearLayout>
+
