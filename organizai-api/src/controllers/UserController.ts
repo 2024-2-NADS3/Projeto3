@@ -11,42 +11,48 @@ export class UserController {
   private catRepository = AppDataSource.getRepository(Categoria);
   
 
-
   createUser = async (req: Request, res: Response) => {
     try {
-      const userDto = req.body;
+      const { categorias, ...userDto } = req.body;
 
       // Criar uma nova instância de User
       const newUser = new User();
-      Object.assign(newUser, userDto); // copia o dto para a nova instancia
+      Object.assign(newUser, userDto);
 
-       // Validar a entidade
-       const errors = await validate(newUser);
-       if (errors.length > 0) {
-         const errorMessages = errors.map(error => 
-           Object.values(error.constraints || {})
-         ).flat();
-         return res.status(400).json({ errors: errorMessages });
-       }
-      // Buscar todas as categorias
-      const categorias = await this.catRepository.find();
+      // Validar a entidade
+      const errors = await validate(newUser);
+      if (errors.length > 0) {
+        const errorMessages = errors.map(error => 
+          Object.values(error.constraints || {})
+        ).flat();
+        return res.status(400).json({ errors: errorMessages });
+      }
 
-      // Associar as categorias ao novo usuário
-      newUser.categorias = categorias;
-
-      const saltRounds = 10; // Define o número de rounds de salt
+      const saltRounds = 10;
       newUser.senha = await bcrypt.hash(newUser.senha, saltRounds);
       
-      // Salvar o usuário com as categorias associadas
+      // Salvar o usuário
       const savedUser = await this.userRepository.save(newUser);
 
-      // Buscar o usuário salvo com as categorias caso queria retonar o usuário com as categorias
-      // const userWithCategories = await this.userRepository.findOne({
-      //   where: { UserId: savedUser.UserId },
-      //   relations: ['categorias']
-      // });
+      // Criar e salvar as categorias associadas ao usuário
+      if (categorias && Array.isArray(categorias)) {
+        const categoriasEntities = categorias.map(cat => {
+          const categoria = new Categoria();
+          Object.assign(categoria, cat);
+          categoria.usuario = savedUser;
+          return categoria;
+        });
 
-      res.status(201).json(savedUser);
+        await this.catRepository.save(categoriasEntities);
+      }
+
+      // Buscar o usuário salvo com as categorias
+      const userWithCategories = await this.userRepository.findOne({
+        where: { UserId: savedUser.UserId },
+        relations: ['categorias']
+      });
+
+      res.status(201).json(userWithCategories);
     } catch (error) {
       console.error(error);
       if (error instanceof QueryFailedError && error.message.includes('duplicate key value violates unique constraint')) {
