@@ -74,24 +74,6 @@ public class ReceitaActivity extends AppCompatActivity {
         apiService = retrofit.create(ApiService.class);
 
 
-//        Map<String, Integer> iconeCategorias = new HashMap<>();
-//        iconeCategorias.put("Aluguel", R.drawable.icone_aluguel);
-//        iconeCategorias.put("Comida", R.drawable.icone_comida);
-//        iconeCategorias.put("Casa", R.drawable.icone_casa);
-//        iconeCategorias.put("Gasolina", R.drawable.icone_gasolina);
-//        iconeCategorias.put("Lazer", R.drawable.icone_lazer);
-//        iconeCategorias.put("Outros", R.drawable.icone_outros);
-//        iconeCategorias.put("Presente", R.drawable.icone_presente);
-//        iconeCategorias.put("Salario", R.drawable.icone_salario);
-//        iconeCategorias.put("Transporte", R.drawable.icone_transporte);
-//        iconeCategorias.put("Internet", R.drawable.icone_internet);
-//
-//        for (Map.Entry<String, Integer> entry : iconeCategorias.entrySet()) {
-//            String categoria = entry.getKey();
-//            Integer id = entry.getValue();
-//            Log.d("IconeCategorias", "Categoria: " + categoria + ", ID: " + id);
-//        }
-
         UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
         String email = sessionManager.getUserEmail();
         buscaPorUsuarioByEmail(email);

@@ -11,6 +11,12 @@ public class CategoriaDto {
 
     private int tipo;
 
+    public CategoriaDto(int categoriaId, String nomeCat, int tipo) {
+        this.categoriaId = categoriaId;
+        this.nomeCat = nomeCat;
+        this.tipo = tipo;
+    }
+
     // Getters e setters
     public int getCategoriaId() {
         return categoriaId;
