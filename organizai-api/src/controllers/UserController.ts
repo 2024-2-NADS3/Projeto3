@@ -90,7 +90,7 @@ export class UserController {
         } else {
           const userWithCategoriesAndQuiz = await this.userRepository.findOne({
             where: { UserId: user.UserId },
-            relations: ['categorias', 'quiz']
+            relations: ['categorias', 'quiz', 'transacoes']
           });
           return res.json(userWithCategoriesAndQuiz);
         }
