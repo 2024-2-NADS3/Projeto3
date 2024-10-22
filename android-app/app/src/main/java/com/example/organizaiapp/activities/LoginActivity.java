@@ -66,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
         TextInputEditText inputSenha = findViewById(R.id.textInputPassword);
         Button btnEntrar = findViewById(R.id.btnEntrar);
         TextView txtCadastrese = findViewById(R.id.txtCadastrese);
+        TextView txtReset = findViewById(R.id.textreset);
+
 
         btnEntrar.setOnClickListener(v -> {
             String email = Objects.requireNonNull(inputEmail.getText()).toString();
@@ -75,6 +77,13 @@ public class LoginActivity extends AppCompatActivity {
 
         txtCadastrese.setOnClickListener(v ->{
             Intent i = new Intent(LoginActivity.this, CadastroAcitivity.class);
+            startActivity(i);
+
+            finish();
+        });
+
+        txtReset.setOnClickListener(v ->{
+            Intent i = new Intent(LoginActivity.this, ResetActivity.class);
             startActivity(i);
 
             finish();
