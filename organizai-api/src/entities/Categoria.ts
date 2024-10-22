@@ -13,6 +13,9 @@ export class Categoria {
     @Column()
     tipo: number
 
+    @Column("decimal", { precision: 10, scale: 2 })
+    total: number
+
     @ManyToOne(() => User, user => user.categorias)
     usuario: User
 
