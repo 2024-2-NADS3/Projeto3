@@ -104,7 +104,7 @@ public class CadastroAcitivity extends AppCompatActivity {
         for (Map.Entry<String, Integer> entry : categoriasReceita.entrySet()) {
             String categoria = entry.getKey();
             Integer id = entry.getValue();
-            categorias.add(new CategoriaDto(id,categoria,1));
+            categorias.add(new CategoriaDto(id,categoria,1,0.00));
         }
 
         Map<String, Integer> categoriasDespesa = new HashMap<>();
@@ -119,7 +119,7 @@ public class CadastroAcitivity extends AppCompatActivity {
         for (Map.Entry<String, Integer> entry : categoriasDespesa.entrySet()) {
             String categoria = entry.getKey();
             Integer id = entry.getValue();
-            categorias.add(new CategoriaDto(id,categoria,2));
+            categorias.add(new CategoriaDto(id,categoria,2,0.00));
         }
         return categorias;
     }
