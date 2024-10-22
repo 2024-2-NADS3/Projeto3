@@ -25,6 +25,7 @@ import com.example.organizaiapp.R;
 import com.example.organizaiapp.adpater.CategoriaAdapter;
 //import com.example.organizaiapp.db.SqLiteHelper;
 import com.example.organizaiapp.dto.CategoriaDto;
+import com.example.organizaiapp.dto.TransacaoRequest;
 import com.example.organizaiapp.dto.UserDataDto;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
@@ -33,10 +34,15 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -93,49 +99,59 @@ public class ReceitaActivity extends AppCompatActivity {
         TextInputEditText dataInput = findViewById(R.id.edit_input_data);
         dataInput.setOnClickListener(v -> showDatePicker(dataInput));
 
+
         Button btnAddReceita = findViewById(R.id.btn_add_receita);
         btnAddReceita.setOnClickListener(v -> {
-            String valor = valorInput.getText().toString();
-            String descricao = descInput.getText().toString();
-            Long categoria = categoriaIdSelected;
-            String data = dataInput.getText().toString();
+            String valorStr = valorInput.getText().toString();
 
-            if (valor.isEmpty() || descricao.isEmpty() || categoria == null || data.isEmpty()) {
+            // Remove os separadores de milhar e formatação de moeda, se houver
+            NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+            try {
+                Number number = format.parse(valorStr);
+
+                assert number != null;
+                BigDecimal valor = BigDecimal.valueOf(number.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+                String descricao = descInput.getText().toString();
+                Long categoria = categoriaIdSelected;
+                String data = dataInput.getText().toString();
+
+            if (valor == null || descricao.isEmpty() || categoria == null || data.isEmpty()) {
                 Toast.makeText(this, "Todos os campos precisam ser preenchidos", Toast.LENGTH_LONG).show();
-            } else if (valor.equals("R$ 0,00")) {
-                Toast.makeText(this, "Valor não pode ser R$ 0,00", Toast.LENGTH_LONG).show();
+            } else if (valor.equals(new BigDecimal("0.00"))) {
+                Toast.makeText(this, "Valor não pode ser R$ 0.00", Toast.LENGTH_LONG).show();
             } else {
-                // Insere os dados no banco de dados
-//                long id = inserirTransacao(valor, descricao, categoria, data);
-
-//                if (id != -1) {
-//                    Toast.makeText(this, "Transação adicionada com sucesso!", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(this, "Erro ao adicionar transação", Toast.LENGTH_LONG).show();
-//                }
-                // Volta para a tela principal
+                TransacaoRequest tr = new TransacaoRequest(user.getUserId(),categoria,true, valor,descricao,data);
+                inserirTransacao(tr);
                 finish();
             }
-
-
-          if(valorInput.getText().toString().isEmpty() || descInput.getText().toString().isEmpty()
-                  || categoriaInput.getText().toString().isEmpty() || dataInput.getText().toString().isEmpty()){
-
-//              inserirTransacao(valorInput.getText().toString(), descInput.getText().toString(), categoriaIdSelected, dataInput.getText().toString());
-
-              Toast.makeText(this, "Todos os campos precisam ser preenchidos", Toast.LENGTH_LONG).show();
-          } else if (valorInput.getText().toString().equals("R$ 0,00")) {
-              Toast.makeText(this, "Valor não pode ser R$ 0,00", Toast.LENGTH_LONG).show();
-          } else {
-              //salva os dados no banco e volta pra tela principal
-
-              finish();
-          }
+            } catch (ParseException e) {
+                Log.e("Format Error", "Erro ao formatar valor " + e);
+            }
         });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+    }
+
+    private void inserirTransacao(TransacaoRequest tr) {
+        Call<ResponseBody> call = apiService.inserirTransacao(tr);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(ReceitaActivity.this, "Novo registro de receita!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ReceitaActivity.this, "Erro ao inserir receita!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ReceitaActivity.this, "Erro de conexão com o servidor", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -164,26 +180,6 @@ public class ReceitaActivity extends AppCompatActivity {
         });
     }
 
-//    private long inserirTransacao(String valor, String desc, Long categoriaIdSelected, String data) {
-//
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        // Populando os valores para a transação
-//        values.put("UsuarioId", userId);
-//        values.put("CategoriaId", categoriaIdSelected);
-//        values.put("isReceita", 1);
-//        values.put("valor", valor);
-//        values.put("descricao", desc);
-//        values.put("data", data);
-//
-//        // Inserindo os dados e retornando o ID da nova linha
-//        long id = db.insert("transacoes", null, values);
-//
-//        db.close(); // Fechar o banco de dados após a operação
-//        return id;
-//    }
-//
     private void showDatePicker(TextInputEditText dataInput) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -194,7 +190,7 @@ public class ReceitaActivity extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        String date = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear; // Formato dd/MM/yyyy
+                        String date =  selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay; // Formato yyyy/MM/dd
                         dataInput.setText(date);
                     }
                 }, year, month, day);

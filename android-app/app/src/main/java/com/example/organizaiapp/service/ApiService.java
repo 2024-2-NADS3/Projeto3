@@ -2,8 +2,8 @@ package com.example.organizaiapp.service;
 
 import com.example.organizaiapp.dto.CadastroRequest;
 import com.example.organizaiapp.dto.LoginRequest;
-import com.example.organizaiapp.dto.QuizDto;
 import com.example.organizaiapp.dto.QuizRequest;
+import com.example.organizaiapp.dto.TransacaoRequest;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -28,5 +28,8 @@ public interface ApiService {
 
     @POST("quiz/")
     Call<ResponseBody> criaQuizCompleto(@Body QuizRequest quizRequest);
+
+    @POST("transacao/")
+    Call<ResponseBody> inserirTransacao(@Body TransacaoRequest tr);
 }
 

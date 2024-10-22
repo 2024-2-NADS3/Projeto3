@@ -17,6 +17,7 @@ public class UserDataDto {
     private String senha;
     private QuizDto quiz;
     private List<CategoriaDto> categorias;
+    private List<TransacaoDto> transacoes;
 
     // Getters e setters
     public int getUserId() {
@@ -89,5 +90,13 @@ public class UserDataDto {
 
     public void setCategorias(List<CategoriaDto> categorias) {
         this.categorias = categorias;
+    }
+
+    public List<TransacaoDto> getTransacoes() {
+        return transacoes;
+    }
+
+    public void setTransacoes(List<TransacaoDto> transacoes) {
+        this.transacoes = transacoes;
     }
 }
