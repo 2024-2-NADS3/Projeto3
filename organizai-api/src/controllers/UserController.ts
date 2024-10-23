@@ -5,10 +5,12 @@ import { Categoria } from '../entities/Categoria';
 import { validate } from 'class-validator';
 import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
+import { Quiz } from '../entities/Quiz';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
   private catRepository = AppDataSource.getRepository(Categoria);
+  private quizRepository = AppDataSource.getRepository(Quiz);
   
 
   createUser = async (req: Request, res: Response) => {
@@ -127,6 +129,38 @@ export class UserController {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Erro ao autenticar usuário" });
+    }
+  };
+
+  deleteUser = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+  
+      if (!id) {
+        return res.status(400).json({ message: "O Id não pode ser nulo." });
+      }
+      // Encontra o usuário
+      const user = await this.userRepository.findOne({where: {
+        UserId: Number(id)
+      } });
+  
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      const quiz = await this.quizRepository.findOne({ where: { UserId: Number(id) } });
+    
+      if (quiz) {
+      await this.quizRepository.delete(quiz.QuizId);
+      
+    }
+  
+      await this.userRepository.delete(id);
+      
+      return res.status(200).json({ message: `Usuário de Id: ${id} excluído com sucesso, juntamente com o quiz.` });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao excluir usuário" });
     }
   };
 }
