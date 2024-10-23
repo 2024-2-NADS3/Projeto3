@@ -33,6 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastroAcitivity extends AppCompatActivity {
     private ApiService apiService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,7 @@ public class CadastroAcitivity extends AppCompatActivity {
         List<CategoriaDto> categorias = gerarListaCategorias();
 
         CadastroRequest cadatroRequest = new CadastroRequest(nome, sobrenome,email,tel, senha, categorias);
+
         Call<ResponseBody> call = apiService.cadastroUser(cadatroRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
