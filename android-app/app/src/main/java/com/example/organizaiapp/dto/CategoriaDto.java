@@ -11,6 +11,15 @@ public class CategoriaDto {
 
     private int tipo;
 
+    private double total;
+
+    public CategoriaDto(int categoriaId, String nomeCat, int tipo, double total) {
+        this.categoriaId = categoriaId;
+        this.nomeCat = nomeCat;
+        this.tipo = tipo;
+        this.total = total;
+    }
+
     // Getters e setters
     public int getCategoriaId() {
         return categoriaId;
@@ -34,5 +43,13 @@ public class CategoriaDto {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 }

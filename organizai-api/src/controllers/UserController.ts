@@ -5,46 +5,58 @@ import { Categoria } from '../entities/Categoria';
 import { validate } from 'class-validator';
 import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
+import { Quiz } from '../entities/Quiz';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
   private catRepository = AppDataSource.getRepository(Categoria);
+  private quizRepository = AppDataSource.getRepository(Quiz);
+  
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const userDto = req.body;
+      const { categorias, ...userDto } = req.body;
 
       // Criar uma nova instância de User
       const newUser = new User();
-      Object.assign(newUser, userDto); // copia o dto para a nova instancia
+
+      Object.assign(newUser, userDto);
 
       // Validar a entidade
       const errors = await validate(newUser);
       if (errors.length > 0) {
-        const errorMessages = errors
-          .map((error) => Object.values(error.constraints || {}))
-          .flat();
+
+        const errorMessages = errors.map(error => 
+          Object.values(error.constraints || {})
+        ).flat();
         return res.status(400).json({ errors: errorMessages });
       }
-      // Buscar todas as categorias
-      const categorias = await this.catRepository.find();
 
-      // Associar as categorias ao novo usuário
-      newUser.categorias = categorias;
-
-      const saltRounds = 10; // Define o número de rounds de salt
+      const saltRounds = 10;
       newUser.senha = await bcrypt.hash(newUser.senha, saltRounds);
-
-      // Salvar o usuário com as categorias associadas
+      
+      // Salvar o usuário
       const savedUser = await this.userRepository.save(newUser);
 
-      // Buscar o usuário salvo com as categorias caso queria retonar o usuário com as categorias
-      // const userWithCategories = await this.userRepository.findOne({
-      //   where: { UserId: savedUser.UserId },
-      //   relations: ['categorias']
-      // });
+      // Criar e salvar as categorias associadas ao usuário
+      if (categorias && Array.isArray(categorias)) {
+        const categoriasEntities = categorias.map(cat => {
+          const categoria = new Categoria();
+          Object.assign(categoria, cat);
+          categoria.usuario = savedUser;
+          return categoria;
+        });
 
-      res.status(201).json(savedUser);
+        await this.catRepository.save(categoriasEntities);
+      }
+
+      // Buscar o usuário salvo com as categorias
+      const userWithCategories = await this.userRepository.findOne({
+        where: { UserId: savedUser.UserId },
+        relations: ['categorias']
+      });
+
+      res.status(201).json(userWithCategories);
     } catch (error) {
       console.error(error);
       if (
@@ -74,22 +86,26 @@ export class UserController {
 
   findUserByEmail = async (req: Request, res: Response) => {
     try {
-      const { email } = req.params; // Captura o email do path (req.params)
-
-      if (!email) {
-        return res.status(400).json({ message: 'Email é obrigatório' });
-      }
-
-      const user = await this.userRepository.findOneBy({ email });
-
-      if (!user) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
-      } else {
-        const userWithCategoriesAndQuiz = await this.userRepository.findOne({
-          where: { UserId: user.UserId },
-          relations: ['categorias', 'quiz'],
-        });
-        return res.json(userWithCategoriesAndQuiz);
+        const { email } = req.params; // Captura o email do path (req.params)
+    
+        if (!email) {
+           return res.status(400).json({ message: "Email é obrigatório" });
+        }
+    
+        const user = await this.userRepository.findOneBy({ email });
+    
+        if (!user) {
+           return res.status(404).json({ message: "Usuário não encontrado" });
+        } else {
+          const userWithCategoriesAndQuiz = await this.userRepository.findOne({
+            where: { UserId: user.UserId },
+            relations: ['categorias', 'quiz', 'transacoes']
+          });
+          return res.json(userWithCategoriesAndQuiz);
+        }
+      } catch (error) {
+        console.error(error);
+         return res.status(500).json({ message: "Erro ao buscar usuário" });
       }
     } catch (error) {
       console.error(error);
@@ -128,6 +144,7 @@ export class UserController {
       return res.status(500).json({ message: 'Erro ao autenticar usuário' });
     }
   };
+
   resetPassword = async (req: Request, res: Response) => {
     try {
       const { email, newPassword } = req.body;
@@ -155,4 +172,37 @@ export class UserController {
       res.status(500).json({ message: 'Erro ao redefinir senha' });
     }
   };
+
+  deleteUser = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+  
+      if (!id) {
+        return res.status(400).json({ message: "O Id não pode ser nulo." });
+      }
+      // Encontra o usuário
+      const user = await this.userRepository.findOne({where: {
+        UserId: Number(id)
+      } });
+  
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      const quiz = await this.quizRepository.findOne({ where: { UserId: Number(id) } });
+    
+      if (quiz) {
+      await this.quizRepository.delete(quiz.QuizId);
+      
+    }
+  
+      await this.userRepository.delete(id);
+      
+      return res.status(200).json({ message: `Usuário de Id: ${id} excluído com sucesso, juntamente com o quiz.` });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao excluir usuário" });
+    }
+  };
 }
+

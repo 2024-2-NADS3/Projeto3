@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, PrimaryColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, PrimaryColumn } from "typeorm"
 import { User } from "./User"
 import { Transacao } from "./Transacao"
 
@@ -13,8 +13,11 @@ export class Categoria {
     @Column()
     tipo: number
 
-    @ManyToMany(() => User, user => user.categorias)
-    usuarios: User[]
+    @Column("decimal", { precision: 10, scale: 2 })
+    total: number
+
+    @ManyToOne(() => User, user => user.categorias)
+    usuario: User
 
     @OneToMany(() => Transacao, transacao => transacao.categoria)
     transacoes: Transacao[]
