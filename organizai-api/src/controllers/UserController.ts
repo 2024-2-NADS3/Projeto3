@@ -107,12 +107,8 @@ export class UserController {
         console.error(error);
          return res.status(500).json({ message: "Erro ao buscar usuário" });
       }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Erro ao buscar usuário' });
     }
-  };
-
+    
   autenticacaoUser = async (req: Request, res: Response) => {
     try {
       const { email, senha } = req.body;
@@ -204,5 +200,5 @@ export class UserController {
       return res.status(500).json({ message: "Erro ao excluir usuário" });
     }
   };
-}
+};
 
