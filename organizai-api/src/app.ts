@@ -5,6 +5,7 @@ import { AppDataSource } from "./data-source"
 import userRoutes from './routes/UserRoutes';
 import quizRoutes from './routes/QuizRoutes';
 import transacaoRoutes from './routes/TransacaoRoutes';
+import catRoutes from './routes/CategoriaRoutes';
 
 
 const app = express();
@@ -22,6 +23,8 @@ AppDataSource.initialize().then(async () => {
     app.use('/quiz', quizRoutes);
 
     app.use('/transacao', transacaoRoutes);
+
+    app.use('/categoria', catRoutes);
 
     
     app.listen(port, () => console.log(`Server running on port ${port}`));
