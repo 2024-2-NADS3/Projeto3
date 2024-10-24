@@ -6,6 +6,7 @@ import { validate } from 'class-validator';
 import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { Quiz } from '../entities/Quiz';
+import { Transacao } from '../entities/Transacao';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
@@ -200,5 +201,51 @@ export class UserController {
       return res.status(500).json({ message: "Erro ao excluir usuário" });
     }
   };
+
+  buscaTransacoesUserByParams = async (req: Request, res: Response) => {
+    try {
+      const { userId, tipoCategoria, mes, ano } = req.query;
+  
+      if (!userId || !tipoCategoria || !mes || !ano) {
+        return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
+      }
+  
+      // Buscar as categorias
+    const categorias = await this.catRepository.find({
+      where: {
+        usuario: { UserId: Number(userId) },  // Aqui assume que a relação está definida para usar UserId
+        tipo: Number(tipoCategoria), // Assegure que `tipo` seja um campo string
+      },
+    });
+  
+      // Se não encontrar categorias, retornar um status 404
+      if (categorias.length === 0) {
+        return res.status(404).json({ message: 'Nenhuma categoria encontrada.' });
+      }
+  
+      // Buscar as transações vinculadas às categorias
+      const transacoes = await AppDataSource.createQueryBuilder()
+        .select('t')
+        .from(Transacao, 't')
+        .where('t.CategoriaId IN (:...categoriaIds)', { categoriaIds: categorias.map(cat => cat.CategoriaId) })
+        .andWhere('EXTRACT(MONTH FROM t.data) = :mes', { mes })
+        .andWhere('EXTRACT(YEAR FROM t.data) = :ano', { ano })
+        .getMany();
+  
+     // Estrutura o resultado
+      const resultado = categorias
+      .filter(categoria => categoria.total > 0.00) // Filtra categorias com total maior que 0
+      .map(categoria => ({
+        categoria,
+        transacoes: transacoes.filter(t => t.CategoriaId === categoria.CategoriaId),
+      }));
+  
+      return res.json(resultado);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Erro ao buscar categorias e transações.' });
+    }
+  };
+  
 };
 

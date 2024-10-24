@@ -6,6 +6,7 @@ const userController = new UserController();
 
 // a utilizacao de 'as any' é bem zuada, nao sei como resolver de outra forma por enquanto
 router.get('/' as any, userController.findAllUsers as any)
+router.get('/transacoes' as any, userController.buscaTransacoesUserByParams as any) 
 router.get('/:email' as any, userController.findUserByEmail as any)
 router.post('/' as any, userController.createUser as any)
 router.post('/isUsuario' as any, userController.autenticacaoUser as any)
