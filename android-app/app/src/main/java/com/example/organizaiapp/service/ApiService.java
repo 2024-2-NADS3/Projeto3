@@ -4,12 +4,14 @@ import com.example.organizaiapp.dto.CadastroRequest;
 import com.example.organizaiapp.dto.LoginRequest;
 import com.example.organizaiapp.dto.QuizRequest;
 import com.example.organizaiapp.dto.TransacaoRequest;
+import com.example.organizaiapp.dto.UpdateCategoriasUserRequest;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiService {
@@ -31,5 +33,8 @@ public interface ApiService {
 
     @POST("transacao/")
     Call<ResponseBody> inserirTransacao(@Body TransacaoRequest tr);
+
+    @PUT("categoria/")
+    Call<ResponseBody> updateCategoriasUser(@Body UpdateCategoriasUserRequest upRequest);
 }
 

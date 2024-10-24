@@ -66,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
-        String email = sessionManager.getUserEmail();
-        buscaPorUsuarioByEmail(email);
+        buscaPorUsuarioByEmail();
     }
 
     @Override
@@ -82,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+        buscaPorUsuarioByEmail();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -233,7 +232,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void buscaPorUsuarioByEmail(String email) {
+    private void buscaPorUsuarioByEmail() {
+
+        UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
+        String email = sessionManager.getUserEmail();
         Call<ResponseBody> call = apiService.findUserByEmail(email);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
