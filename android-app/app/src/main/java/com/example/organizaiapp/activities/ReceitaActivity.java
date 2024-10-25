@@ -3,6 +3,7 @@ package com.example.organizaiapp.activities;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -122,7 +123,8 @@ public class ReceitaActivity extends AppCompatActivity {
             } else {
                 TransacaoRequest tr = new TransacaoRequest(user.getUserId(),categoria,true, valor,descricao,data);
                 inserirTransacao(tr);
-                finish();
+                Intent i = new Intent(this, MainActivity.class);
+                startActivity(i);
             }
             } catch (ParseException e) {
                 Log.e("Format Error", "Erro ao formatar valor " + e);

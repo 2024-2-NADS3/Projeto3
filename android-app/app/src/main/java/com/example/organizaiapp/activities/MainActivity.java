@@ -46,10 +46,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import okhttp3.ResponseBody;
@@ -91,13 +88,29 @@ public class MainActivity extends AppCompatActivity {
 
         buscaPorUsuarioByEmail();
 
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        criaBarraDosMeses();
+        mudaTiposCategoria();
+
+        Button btnMeusBeneficios = findViewById(R.id.btn_meus_beneficios);
+        btnMeusBeneficios.setOnClickListener(v -> {
+            Intent i = new Intent(this, MeusBeneficiosActivity.class);
+            startActivity(i);
+        });
+
+        //Implementacao do BottomSheetDialog para adicionar Receita e Despesa
+        btnAdicionar = findViewById(R.id.btn_adicionar);
+        btnAdicionar.setOnClickListener(v -> {
+            showDialog();
+        });
+    }
+
+    private void mudaTiposCategoria() {
         //Implementacao de mudança de constraint entre receita e despesa
         ConstraintLayout constraintLayout = findViewById(R.id.balanco_constraint);
         View bgSelected = findViewById(R.id.bg_selected);
@@ -120,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.applyTo(constraintLayout);
                 int colorVerdeForte = ContextCompat.getColor(v.getContext(), R.color.verdeForte);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(colorVerdeForte));
-//                montaRegistros();
+                buscarCategoriasByParam(user.getUserId(), 1);
             }
         });
 
@@ -139,31 +152,11 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.connect(R.id.bg_selected, ConstraintSet.END, R.id.txt_despesa_titulo, ConstraintSet.END);
                 constraintSet.applyTo(constraintLayout);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-//                montaRegistros();
+                buscarCategoriasByParam(user.getUserId(), 2);
             }
         });
-
-        Button btnMeusBeneficios = findViewById(R.id.btn_meus_beneficios);
-        btnMeusBeneficios.setOnClickListener(v -> {
-            Intent i = new Intent(this, MeusBeneficiosActivity.class);
-            startActivity(i);
-        });
-
-        //Implementacao do BottomSheetDialog para adicionar Receita e Despesa
-        btnAdicionar = findViewById(R.id.btn_adicionar);
-        btnAdicionar.setOnClickListener(v -> {
-            showDialog();
-        });
     }
 
-
-    private void montaInterfacePrincipal() {
-
-        //criacao a barra de rolagem para meses do ano
-        criaBarraDosMeses();
-
-        buscarCategoriasByParam(user.getUserId(), 1);
-    }
 
     private void montaRegistros() {
         ScrollView verticalScrollView = findViewById(R.id.vertical_scroll_view);
@@ -217,47 +210,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void buscarCategoriasByParam(final int userId, final int tipoCat) {
-        String dataSelecionada = String.valueOf(getDataSelecionada()); // Exemplo: "202410"
-        int ano = Integer.parseInt(dataSelecionada.substring(0, 4)); // Ano
-        int mes = Integer.parseInt(dataSelecionada.substring(4, 6)); // Mês
-
-        Call<ResponseBody> call = apiService.buscaTransacoesUserBy(String.valueOf(userId), String.valueOf(tipoCat), String.valueOf(mes), String.valueOf(ano));
-        // Executa a chamada da API
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        // Lê o corpo da resposta como uma string
-                        String responseBody = response.body().string(); // Lê o corpo da resposta
-                        Gson gson = new Gson();
-
-                        // Usando TypeToken para converter a string JSON em uma lista de CategoriasAndTransacaoDto
-                        Type listType = new TypeToken<List<CategoriasAndTransacaoDto>>(){}.getType();
-                        listdataCatTransacao = gson.fromJson(responseBody, listType);
-
-                        Log.d("CatLog", "Resposta da API: " + responseBody);
-                        montaRegistros();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.e("CatLog", "Erro ao processar a resposta: " + e.getMessage());
-                    }
-                } else {
-                    Log.e("CatLog", "Erro na resposta da API: " + response.message());
-                    // Pode-se adicionar aqui uma lógica para lidar com falhas (exibir mensagem ao usuário, etc.)
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("CatLog", "Erro interno: " + t.getMessage());
-                // Também é possível tratar falhas de rede ou erros da API
-            }
-        });
-    }
-
-
     private void criaBarraDosMeses() {
         final HorizontalScrollView[] horizontalScrollView = {findViewById(R.id.horizontal_scroll_view)};
         LinearLayout linearLayout = findViewById(R.id.linear_meses);
@@ -305,6 +257,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void buscarCategoriasByParam(final int userId, final int tipoCat) {
+        String dataSelecionada = String.valueOf(getDataSelecionada()); // Exemplo: "202410"
+        int ano = Integer.parseInt(dataSelecionada.substring(0, 4)); // Ano
+        int mes = Integer.parseInt(dataSelecionada.substring(4, 6)); // Mês
+
+        Call<ResponseBody> call = apiService.buscaTransacoesUserBy(String.valueOf(userId), String.valueOf(tipoCat), String.valueOf(mes), String.valueOf(ano));
+        // Executa a chamada da API
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        // Lê o corpo da resposta como uma string
+                        String responseBody = response.body().string(); // Lê o corpo da resposta
+                        Gson gson = new Gson();
+
+                        // Usando TypeToken para converter a string JSON em uma lista de CategoriasAndTransacaoDto
+                        Type listType = new TypeToken<List<CategoriasAndTransacaoDto>>(){}.getType();
+                        listdataCatTransacao = gson.fromJson(responseBody, listType);
+
+                        Log.d("CatLog", "Resposta da API: " + responseBody);
+                        montaRegistros();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e("CatLog", "Erro ao processar a resposta: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("CatLog", "Erro na resposta da API: " + response.message());
+                    // Pode-se adicionar aqui uma lógica para lidar com falhas (exibir mensagem ao usuário, etc.)
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("CatLog", "Erro interno: " + t.getMessage());
+                // Também é possível tratar falhas de rede ou erros da API
+            }
+        });
+    }
+
     private void buscaPorUsuarioByEmail() {
 
         UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
@@ -318,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
                         String responseBody = response.body().string();
                         Gson gson = new Gson();
                         user = gson.fromJson(responseBody, UserDataDto.class);
-                        montaInterfacePrincipal();
+                        buscarCategoriasByParam(user.getUserId(), 1);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
