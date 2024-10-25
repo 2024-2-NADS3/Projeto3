@@ -4,21 +4,24 @@ import { Transacao } from "./Transacao"
 
 @Entity()
 export class Categoria {
-    @PrimaryColumn()
-    CategoriaId: number
+    @PrimaryGeneratedColumn() // ID autoincrementável
+    Id: number; // Nova coluna para ID autoincrementável
+
+    @Column() // Coluna para CategoriaId, que pode ser usada para lógica específica
+    CategoriaId: number; 
 
     @Column()
-    nomeCat: string
+    nomeCat: string;
 
     @Column()
-    tipo: number
+    tipo: number;
 
     @Column("decimal", { precision: 10, scale: 2 })
-    total: number
+    total: number;
 
     @ManyToOne(() => User, user => user.categorias)
-    usuario: User
+    usuario: User;
 
     @OneToMany(() => Transacao, transacao => transacao.categoria)
-    transacoes: Transacao[]
+    transacoes: Transacao[];
 }

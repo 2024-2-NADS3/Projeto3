@@ -16,61 +16,72 @@ export class UserController {
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const { categorias, ...userDto } = req.body;
+        const { categorias, ...userDto } = req.body;
 
-      // Criar uma nova instância de User
-      const newUser = new User();
+        // Criar uma nova instância de User
+        const newUser = new User();
+        Object.assign(newUser, userDto);
 
-      Object.assign(newUser, userDto);
+        // Validar a entidade
+        const errors = await validate(newUser);
+        if (errors.length > 0) {
+            const errorMessages = errors.map(error => 
+                Object.values(error.constraints || {})
+            ).flat();
+            return res.status(400).json({ errors: errorMessages });
+        }
 
-      // Validar a entidade
-      const errors = await validate(newUser);
-      if (errors.length > 0) {
+        const saltRounds = 10;
+        newUser.senha = await bcrypt.hash(newUser.senha, saltRounds);
 
-        const errorMessages = errors.map(error => 
-          Object.values(error.constraints || {})
-        ).flat();
-        return res.status(400).json({ errors: errorMessages });
-      }
+        // Salvar o usuário
+        const savedUser = await this.userRepository.save(newUser);
 
-      const saltRounds = 10;
-      newUser.senha = await bcrypt.hash(newUser.senha, saltRounds);
-      
-      // Salvar o usuário
-      const savedUser = await this.userRepository.save(newUser);
+        // Criar e salvar as categorias associadas ao usuário
+        if (categorias && Array.isArray(categorias)) {
+            const categoriasEntities = [];
 
-      // Criar e salvar as categorias associadas ao usuário
-      if (categorias && Array.isArray(categorias)) {
-        const categoriasEntities = categorias.map(cat => {
-          const categoria = new Categoria();
-          Object.assign(categoria, cat);
-          categoria.usuario = savedUser;
-          return categoria;
+            for (const cat of categorias) {
+                // Verificar se a categoria já existe
+                const existingCategory = await this.catRepository.findOne({
+                    where: { CategoriaId: cat.CategoriaId } // Verificar pelo ID
+                });
+
+                if (existingCategory) {
+                    // Se a categoria já existe, vincula ao novo usuário
+                    existingCategory.usuario = savedUser; // Isso adiciona a categoria ao novo usuário
+                    categoriasEntities.push(existingCategory);
+                } else {
+                    const categoria = new Categoria();
+                    Object.assign(categoria, cat);
+                    categoria.usuario = savedUser; // Vincular ao novo usuário
+                    categoriasEntities.push(categoria);
+                }
+            }
+
+            if (categoriasEntities.length > 0) {
+                await this.catRepository.save(categoriasEntities);
+            }
+        }
+
+        // Buscar o usuário salvo com as categorias
+        const userWithCategories = await this.userRepository.findOne({
+            where: { UserId: savedUser.UserId },
+            relations: ['categorias']
         });
 
-        await this.catRepository.save(categoriasEntities);
-      }
-
-      // Buscar o usuário salvo com as categorias
-      const userWithCategories = await this.userRepository.findOne({
-        where: { UserId: savedUser.UserId },
-        relations: ['categorias']
-      });
-
-      res.status(201).json(userWithCategories);
+        res.status(201).json(userWithCategories);
     } catch (error) {
-      console.error(error);
-      if (
-        error instanceof QueryFailedError &&
-        error.message.includes('duplicate key value violates unique constraint')
-      ) {
-        return res
-          .status(409)
-          .json({ message: 'Este email já está cadastrado' });
-      }
-      res.status(500).json({ message: 'Erro ao criar usuário' });
+        console.error(error);
+        if (
+            error instanceof QueryFailedError &&
+            error.message.includes('duplicate key value violates unique constraint')
+        ) {
+            return res.status(409).json({ message: 'Este email já está cadastrado' });
+        }
+        res.status(500).json({ message: 'Erro ao criar usuário' });
     }
-  };
+};
 
   findAllUsers = async (req: Request, res: Response) => {
     try {
