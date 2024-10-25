@@ -22,6 +22,9 @@ public interface ApiService {
     @POST("users/")
     Call<ResponseBody> cadastroUser(@Body CadastroRequest cadastroRequest);
 
+    @GET("users/transacoes/{userId}/{tipoCategoria}/{mes}/{ano}")
+    Call<ResponseBody> buscaTransacoesUserBy(@Path("userId") String userId, @Path("tipoCategoria") String tipoCat, @Path("mes") String mes, @Path("ano") String ano);
+
     @GET("users/{email}")
     Call<ResponseBody> findUserByEmail(@Path("email") String email);
 
@@ -36,5 +39,7 @@ public interface ApiService {
 
     @PUT("categoria/")
     Call<ResponseBody> updateCategoriasUser(@Body UpdateCategoriasUserRequest upRequest);
+
+
 }
 

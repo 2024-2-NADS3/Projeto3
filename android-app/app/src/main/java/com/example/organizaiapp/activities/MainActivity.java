@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,7 +22,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -37,16 +35,21 @@ import androidx.transition.TransitionManager;
 import com.example.organizaiapp.R;
 import com.example.organizaiapp.domain.CategoriaCard;
 import com.example.organizaiapp.dto.CategoriaDto;
+import com.example.organizaiapp.dto.CategoriasAndTransacaoDto;
 import com.example.organizaiapp.dto.UserDataDto;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import okhttp3.ResponseBody;
@@ -59,8 +62,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private int dataSelecionada;
+
     ImageView btnAdicionar;
+
     UserDataDto user;
+
+    private List<CategoriasAndTransacaoDto> listdataCatTransacao;
+
     private ApiService apiService;
 
     @Override
@@ -80,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+
         buscaPorUsuarioByEmail();
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -110,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.applyTo(constraintLayout);
                 int colorVerdeForte = ContextCompat.getColor(v.getContext(), R.color.verdeForte);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(colorVerdeForte));
+//                montaRegistros();
             }
         });
 
@@ -128,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.connect(R.id.bg_selected, ConstraintSet.END, R.id.txt_despesa_titulo, ConstraintSet.END);
                 constraintSet.applyTo(constraintLayout);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+//                montaRegistros();
             }
         });
 
@@ -144,8 +156,109 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void montaInterfacePrincipal() {
+
         //criacao a barra de rolagem para meses do ano
+        criaBarraDosMeses();
+
+        buscarCategoriasByParam(user.getUserId(), 1);
+    }
+
+    private void montaRegistros() {
+        ScrollView verticalScrollView = findViewById(R.id.vertical_scroll_view);
+        LinearLayout linearRegistros = findViewById(R.id.linear_registros);
+        TextView txtRegistroVazio = findViewById(R.id.txt_registro_vazio);
+
+        // Limpa os registros anteriores
+        linearRegistros.removeAllViews();
+
+        List<CategoriaDto> categoriaDtos = new ArrayList<>();
+        for (CategoriasAndTransacaoDto cat : listdataCatTransacao){
+            categoriaDtos.add(cat.getCategoria());
+        }
+
+        List<CategoriaCard> registros = categoriaDtos.stream()
+                .map(cat -> new CategoriaCard(cat.getCategoriaId(), cat.getNomeCat(), cat.getTotal()))
+                .collect(Collectors.toList());
+
+        // Se houver registros, mostra a lista e oculta a mensagem de registro vazio
+        if (!registros.isEmpty()) {
+            txtRegistroVazio.setVisibility(View.GONE); // Oculta o texto de registro vazio
+            verticalScrollView.setVisibility(View.VISIBLE); // Exibe o ScrollView
+
+            // Adiciona cada registro como um card
+            for (CategoriaCard registro : registros) {
+                LayoutInflater inflater = LayoutInflater.from(this);
+                LinearLayout card = (LinearLayout) inflater.inflate(R.layout.categoria_card, linearRegistros, false);
+
+                ImageView imgCat = card.findViewById(R.id.categoria_icon_categoria);
+                TextView nomeCategoria = card.findViewById(R.id.categoria_nome_categoria);
+                TextView valorGasto = card.findViewById(R.id.categoria_valor_gasto);
+
+                imgCat.setImageResource(registro.getCategoriaId());
+                nomeCategoria.setText(registro.getCategoria());
+                valorGasto.setText("R$ " + registro.getValor());
+
+                // Adiciona o card ao LinearLayout
+                linearRegistros.addView(card);
+
+                // Define o comportamento de clique
+                card.setOnClickListener(v -> {
+                    Intent i = new Intent(this, CategoriaEspecificaActivity.class);
+                    i.putExtra("nomeCategoria", registro.getCategoria());
+                    startActivity(i);
+                });
+            }
+        } else {
+            // Se a lista de registros estiver vazia, exibe a mensagem de registro vazio
+            txtRegistroVazio.setVisibility(View.VISIBLE);
+            verticalScrollView.setVisibility(View.GONE); // Oculta o ScrollView
+        }
+    }
+
+    private void buscarCategoriasByParam(final int userId, final int tipoCat) {
+        String dataSelecionada = String.valueOf(getDataSelecionada()); // Exemplo: "202410"
+        int ano = Integer.parseInt(dataSelecionada.substring(0, 4)); // Ano
+        int mes = Integer.parseInt(dataSelecionada.substring(4, 6)); // Mês
+
+        Call<ResponseBody> call = apiService.buscaTransacoesUserBy(String.valueOf(userId), String.valueOf(tipoCat), String.valueOf(mes), String.valueOf(ano));
+        // Executa a chamada da API
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        // Lê o corpo da resposta como uma string
+                        String responseBody = response.body().string(); // Lê o corpo da resposta
+                        Gson gson = new Gson();
+
+                        // Usando TypeToken para converter a string JSON em uma lista de CategoriasAndTransacaoDto
+                        Type listType = new TypeToken<List<CategoriasAndTransacaoDto>>(){}.getType();
+                        listdataCatTransacao = gson.fromJson(responseBody, listType);
+
+                        Log.d("CatLog", "Resposta da API: " + responseBody);
+                        montaRegistros();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e("CatLog", "Erro ao processar a resposta: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("CatLog", "Erro na resposta da API: " + response.message());
+                    // Pode-se adicionar aqui uma lógica para lidar com falhas (exibir mensagem ao usuário, etc.)
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("CatLog", "Erro interno: " + t.getMessage());
+                // Também é possível tratar falhas de rede ou erros da API
+            }
+        });
+    }
+
+
+    private void criaBarraDosMeses() {
         final HorizontalScrollView[] horizontalScrollView = {findViewById(R.id.horizontal_scroll_view)};
         LinearLayout linearLayout = findViewById(R.id.linear_meses);
         Drawable connersRounded = ContextCompat.getDrawable(this, R.drawable.banner_conners_rounded);
@@ -189,46 +302,6 @@ public class MainActivity extends AppCompatActivity {
                 setDataSelecionada(textView.getId());
             });
             linearLayout.addView(textView);
-        }
-        // -----------------------------------------------------------------------------------------
-
-
-        // Criação dos registros
-        ScrollView verticalScrollView = findViewById(R.id.vertical_scroll_view);
-        LinearLayout linearRegistros = findViewById(R.id.linear_registros);
-        TextView txtRegistroVazio = findViewById(R.id.txt_registro_vazio);
-
-        linearRegistros.removeAllViews();
-        List<CategoriaCard> registros = user.getCategorias().stream()
-                .filter(cat -> cat.getTipo() == 1 && cat.getTotal() != 0.00) // Filtra categorias do tipo 1 com total diferente de 0.00
-                .map(cat -> new CategoriaCard(cat.getCategoriaId(), cat.getNomeCat(), cat.getTotal())) // Mapeia para CategoriaCard
-                .sorted(Comparator.comparingDouble(CategoriaCard::getValor).reversed()) // Ordena por total em ordem decrescente
-                .collect(Collectors.toList());
-
-        if(!registros.isEmpty()){
-            txtRegistroVazio.setVisibility(View.INVISIBLE);
-            verticalScrollView.setVisibility(View.VISIBLE);
-            for (CategoriaCard registro : registros){
-                LayoutInflater inflater = LayoutInflater.from(this);
-                LinearLayout card = (LinearLayout) inflater.inflate(R.layout.categoria_card, linearRegistros, false);
-
-                ImageView imgCat = card.findViewById(R.id.categoria_icon_categoria);
-                TextView nomeCategoria = card.findViewById(R.id.categoria_nome_categoria);
-                TextView valorGasto = card.findViewById(R.id.categoria_valor_gasto);
-
-                imgCat.setImageResource(registro.getCategoriaId());
-                nomeCategoria.setText(registro.getCategoria());
-                valorGasto.setText("R$ " + registro.getValor());
-
-                // Adicione o card ao LinearLayout
-                linearRegistros.addView(card);
-
-                card.setOnClickListener(v -> {
-                    Intent i = new Intent(this, CategoriaEspecificaActivity.class);
-                    i.putExtra("nomeCategoria", registro.getCategoria());
-                    startActivity(i);
-                });
-            }
         }
     }
 
