@@ -23,20 +23,10 @@ export class TransacaoController {
                     usuario: tranSaved.UserId
                  } })
 
-                 if (cat) {
-                    // Converter valores para número para evitar concatenação de strings
-                    const valorTransacao = parseFloat(tranSaved.valor);
-                    const totalAtual = parseFloat((cat.total || "0").toString());
-
-                    // Somar o valor da transação ao total da categoria
-                    cat.total = totalAtual + valorTransacao;
-
-        
-                    // Salvar a categoria atualizada
-                    await this.catRepository.save(cat);
-                }
-
-            res.status(201).json(tranSaved);
+                 res.status(201).json({ 
+                    transacao: tranSaved,
+                    categoria: cat 
+                });
         }catch (error) {
             // Logando a mensagem de erro no caso de erro 500
             const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
