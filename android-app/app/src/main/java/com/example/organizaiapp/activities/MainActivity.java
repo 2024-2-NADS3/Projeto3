@@ -36,6 +36,7 @@ import com.example.organizaiapp.R;
 import com.example.organizaiapp.domain.CategoriaCard;
 import com.example.organizaiapp.dto.CategoriaDto;
 import com.example.organizaiapp.dto.CategoriasAndTransacaoDto;
+import com.example.organizaiapp.dto.TransacaoDto;
 import com.example.organizaiapp.dto.UserDataDto;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
@@ -44,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -68,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ApiService apiService;
 
+    DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+
+    private int categoriaAtual = 1;
     @Override
     protected void onResume() {
         super.onResume();
@@ -133,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.applyTo(constraintLayout);
                 int colorVerdeForte = ContextCompat.getColor(v.getContext(), R.color.verdeForte);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(colorVerdeForte));
+                setTipoCategoriaAtual(1);
                 buscarCategoriasByParam(user.getUserId(), 1);
             }
         });
@@ -152,9 +158,53 @@ public class MainActivity extends AppCompatActivity {
                 constraintSet.connect(R.id.bg_selected, ConstraintSet.END, R.id.txt_despesa_titulo, ConstraintSet.END);
                 constraintSet.applyTo(constraintLayout);
                 bgSelected.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                setTipoCategoriaAtual(2);
                 buscarCategoriasByParam(user.getUserId(), 2);
             }
         });
+    }
+
+
+    private void calculaBalanco() {
+        List<CategoriaDto> categoriaDtos = new ArrayList<>();
+
+        // Itera sobre cada categoria e suas transações para acumular o total por categoria
+        for (CategoriasAndTransacaoDto cat : listdataCatTransacao) {
+            CategoriaDto categoria = cat.getCategoria();
+            double valorTotalDaCategoria = 0;
+
+            // Calcula o total para cada categoria a partir das suas transações
+            for (TransacaoDto tranDto : cat.getTransacoes()) {
+                valorTotalDaCategoria += tranDto.getValor();
+            }
+
+            // Define o total calculado na categoria
+            categoria.setTotal(valorTotalDaCategoria);
+            categoriaDtos.add(categoria);
+        }
+
+        // Filtra categorias de receita e despesa
+        List<CategoriaDto> categoriaReceita = categoriaDtos.stream()
+                .filter(categoriaDto -> categoriaDto.getTipo() == 1)
+                .collect(Collectors.toList());
+
+        List<CategoriaDto> categoriaDespesa = categoriaDtos.stream()
+                .filter(categoriaDto -> categoriaDto.getTipo() == 2)
+                .collect(Collectors.toList());
+
+        // Calcula o total geral para receitas e despesas
+        double totalCatReceita = categoriaReceita.stream().mapToDouble(CategoriaDto::getTotal).sum();
+        double totalCatDespesa = categoriaDespesa.stream().mapToDouble(CategoriaDto::getTotal).sum();
+
+        // Formatação com duas casas decimais
+        TextView txt_receita_valor = findViewById(R.id.txt_receita_valor);
+        txt_receita_valor.setText("R$ " + decimalFormat.format(totalCatReceita));
+
+        TextView txt_despesa_valor = findViewById(R.id.txt_despesa_valor);
+        txt_despesa_valor.setText("R$ " + decimalFormat.format(totalCatDespesa));
+
+        TextView txt_numBalanco = findViewById(R.id.txt_numBalanco);
+        txt_numBalanco.setText("R$ " + decimalFormat.format(totalCatReceita - totalCatDespesa));
     }
 
 
@@ -166,14 +216,20 @@ public class MainActivity extends AppCompatActivity {
         // Limpa os registros anteriores
         linearRegistros.removeAllViews();
 
-        List<CategoriaDto> categoriaDtos = new ArrayList<>();
-        for (CategoriasAndTransacaoDto cat : listdataCatTransacao){
-            categoriaDtos.add(cat.getCategoria());
-        }
+        // Mapeia as categorias e calcula o total de transações para cada uma
+        List<CategoriaCard> registros = new ArrayList<>();
+        for (CategoriasAndTransacaoDto cat : listdataCatTransacao) {
+            CategoriaDto categoria = cat.getCategoria();
+            double valorTotalDaCategoria = 0;
 
-        List<CategoriaCard> registros = categoriaDtos.stream()
-                .map(cat -> new CategoriaCard(cat.getCategoriaId(), cat.getNomeCat(), cat.getTotal()))
-                .collect(Collectors.toList());
+            // Soma os valores das transações para a categoria atual
+            for (TransacaoDto tranDto : cat.getTransacoes()) {
+                valorTotalDaCategoria += tranDto.getValor();
+            }
+
+            // Cria um registro com o total da categoria
+            registros.add(new CategoriaCard(categoria.getCategoriaId(), categoria.getNomeCat(), valorTotalDaCategoria));
+        }
 
         // Se houver registros, mostra a lista e oculta a mensagem de registro vazio
         if (!registros.isEmpty()) {
@@ -191,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
                 imgCat.setImageResource(registro.getCategoriaId());
                 nomeCategoria.setText(registro.getCategoria());
-                valorGasto.setText("R$ " + registro.getValor());
+                valorGasto.setText("R$ " + decimalFormat.format(registro.getValor()));
 
                 // Adiciona o card ao LinearLayout
                 linearRegistros.addView(card);
@@ -208,6 +264,8 @@ public class MainActivity extends AppCompatActivity {
             txtRegistroVazio.setVisibility(View.VISIBLE);
             verticalScrollView.setVisibility(View.GONE); // Oculta o ScrollView
         }
+
+        buscarCategoriasByParam(user.getUserId(), 0);
     }
 
     private void criaBarraDosMeses() {
@@ -252,10 +310,13 @@ public class MainActivity extends AppCompatActivity {
                 textView.setTextColor(Color.WHITE);
                 selectedTextView[0] = textView; // Atualiza a variável para a nova seleção
                 setDataSelecionada(textView.getId());
+                buscarCategoriasByParam(user.getUserId(), getTipoCategoriaAtual());
             });
             linearLayout.addView(textView);
         }
     }
+
+
 
     private void buscarCategoriasByParam(final int userId, final int tipoCat) {
         String dataSelecionada = String.valueOf(getDataSelecionada()); // Exemplo: "202410"
@@ -278,7 +339,11 @@ public class MainActivity extends AppCompatActivity {
                         listdataCatTransacao = gson.fromJson(responseBody, listType);
 
                         Log.d("CatLog", "Resposta da API: " + responseBody);
-                        montaRegistros();
+                        if (tipoCat == 0){
+                            calculaBalanco();
+                        } else {
+                            montaRegistros();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                         Log.e("CatLog", "Erro ao processar a resposta: " + e.getMessage());
@@ -296,6 +361,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void buscaPorUsuarioByEmail() {
 
@@ -361,5 +428,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void setDataSelecionada(int dataSelecionada) {
         this.dataSelecionada = dataSelecionada;
+    }
+
+    private int getTipoCategoriaAtual() {
+        return categoriaAtual;
+    }
+
+    public void setTipoCategoriaAtual(int categoriaAtual) {
+        this.categoriaAtual = categoriaAtual;
     }
 }
