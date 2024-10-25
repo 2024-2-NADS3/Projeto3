@@ -235,22 +235,22 @@ export class UserController {
 
         // Estruturar o resultado
         const resultado = categorias
-            .filter(categoria => categoria.total > 0.00) // Filtra categorias com total maior que 0
-            .map(categoria => {
-                // Para cada categoria, filtra as transações que correspondem
-                const transacoesRelacionadas = transacoes.filter(t => t.CategoriaId === categoria.CategoriaId);
+        .map(categoria => {
+        // Filtra as transações que correspondem a esta categoria
+        const transacoesRelacionadas = transacoes.filter(t => t.CategoriaId === categoria.CategoriaId);
 
-                // Retorna apenas as categorias que têm transações relacionadas
-                return {
-                    categoria: {
-                        CategoriaId: categoria.CategoriaId,
-                        nomeCat: categoria.nomeCat,
-                        tipo: categoria.tipo,
-                        total: categoria.total,
-                    },
-                    transacoes: transacoesRelacionadas, // Adiciona as transações relacionadas
-                };
-            }).filter(item => item.transacoes.length > 0); // Filtra para manter apenas categorias com transações
+        // Retorna apenas as categorias que têm transações relacionadas
+        return {
+            categoria: {
+                CategoriaId: categoria.CategoriaId,
+                nomeCat: categoria.nomeCat,
+                tipo: categoria.tipo,
+                total: categoria.total,
+            },
+            transacoes: transacoesRelacionadas, // Adiciona as transações relacionadas
+        };
+    })
+    .filter(item => item.transacoes.length > 0);// Filtra para manter apenas categorias com transações
 
         // Retorna o resultado com as categorias e suas transações
         return res.status(200).json(resultado);
