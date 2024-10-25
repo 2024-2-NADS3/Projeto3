@@ -207,18 +207,18 @@ export class UserController {
         const { userId, tipoCategoria, mes, ano } = req.params;
 
         // Verifica se todos os parâmetros obrigatórios foram fornecidos
-        if (!userId || !tipoCategoria || !mes || !ano) {
+        if (!userId  || !mes || !ano) {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
 
-        // Buscar as categorias para o usuário e tipo de categoria
-        const categorias = await this.catRepository.find({
+          // Define a condição de busca para categorias com base no tipoCategoria
+          // Monta a consulta condicional para as categorias
+          const categorias = await this.catRepository.find({
             where: {
-                usuario: { UserId: Number(userId) },  // Assume que a relação está definida para usar UserId
-                tipo: Number(tipoCategoria), // Assegure que `tipo` seja um campo numérico
+                usuario: { UserId: Number(userId) },
+                ...(tipoCategoria !== '0' ? { tipo: Number(tipoCategoria) } : {}), // Aplica o filtro de tipo apenas se diferente de '0'
             },
         });
-
         // Se não encontrar categorias, retornar um status 404
         if (categorias.length === 0) {
             return res.status(404).json({ message: 'Nenhuma categoria encontrada.' });
