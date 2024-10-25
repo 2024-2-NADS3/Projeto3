@@ -2,6 +2,7 @@ package com.example.organizaiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -118,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                             })
                             .exceptionally(throwable -> {
                                 Toast.makeText(LoginActivity.this, "Erro ao verificar o quiz", Toast.LENGTH_LONG).show();
+                                Log.e("API_QUIZ", "Erro ao verificar o quiz" + throwable.getMessage());
                                 return null;
                             });
                 } else {
@@ -221,7 +223,6 @@ public class LoginActivity extends AppCompatActivity {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         Call<ResponseBody> call = apiService.findUserByEmail(email);
-
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -231,7 +232,6 @@ public class LoginActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         userData = gson.fromJson(responseBody, UserDataDto.class);
 
-                        //salva na userSession o email e o id do usuario logado
                         UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
                         sessionManager.saveUserSession(userData.getEmail(), userData.getUserId());
 
@@ -241,7 +241,7 @@ public class LoginActivity extends AppCompatActivity {
                         future.completeExceptionally(e);
                     }
                 } else {
-                    future.complete(false); // Handle unsuccessful response
+                    future.completeExceptionally(new RuntimeException("Resposta não bem-sucedida: " + response.message()));
                 }
             }
 
@@ -252,5 +252,6 @@ public class LoginActivity extends AppCompatActivity {
         });
         return future;
     }
+
 
 }
