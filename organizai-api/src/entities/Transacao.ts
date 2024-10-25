@@ -30,6 +30,6 @@ export class Transacao {
     usuario: User
 
     @ManyToOne(() => Categoria, categoria => categoria.transacoes)
-    @JoinColumn({ name: "CategoriaId" })
+    @JoinColumn({ name: "CategoriaId", referencedColumnName: "Id" })
     categoria: Categoria
 }

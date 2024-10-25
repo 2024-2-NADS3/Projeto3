@@ -10,29 +10,42 @@ export class TransacaoController {
     private userRepository = AppDataSource.getRepository(User);
     private catRepository = AppDataSource.getRepository(Categoria);
     
-    inserirTransacao = async (req: Request, res: Response) =>{
+    inserirTransacao = async (req: Request, res: Response) => {
         try {
-
             const tranDto = req.body;
-
-            const tranSaved = await this.transRepository.save(tranDto);
-
-            const cat = await this.catRepository.findOne({ 
-                where: { 
-                    CategoriaId: tranSaved.CategoriaId,
-                    usuario: tranSaved.UserId
-                 } })
-
-                 res.status(201).json({ 
-                    transacao: tranSaved,
-                    categoria: cat 
-                });
-        }catch (error) {
+    
+            // Busca a categoria correspondente ao UsuarioId e CategoriaId fornecidos
+            const categoria = await this.catRepository.findOne({
+                where: {
+                    CategoriaId: tranDto.CategoriaId,
+                    usuario: { UserId: tranDto.UsuarioId } // Verifica o usuário através do relacionamento
+                }
+            });
+    
+            // Verifica se a categoria existe
+            if (!categoria) {
+                return res.status(404).json({ message: "Categoria não encontrada." });
+            }
+    
+            // Altera o DTO da transação para incluir o ID da categoria encontrada
+            const tranToSave = {
+                ...tranDto,
+                CategoriaId: categoria.Id // Usa o ID da categoria
+            };
+    
+            // Salva a transação com o ID da categoria correto
+            const tranSaved = await this.transRepository.save(tranToSave);
+    
+            res.status(201).json({
+                transacao: tranSaved,
+                categoria: categoria // Retorna a categoria encontrada
+            });
+        } catch (error) {
             // Logando a mensagem de erro no caso de erro 500
             const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
-            console.error(`Erro ao insirir transacao: ${errorMessage}`);
-
-            res.status(500).json({ message: "Erro ao insirir transacao", error: errorMessage });
+            console.error(`Erro ao inserir transacao: ${errorMessage}`);
+    
+            res.status(500).json({ message: "Erro ao inserir transacao", error: errorMessage });
         }
     };
 

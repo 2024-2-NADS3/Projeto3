@@ -207,50 +207,53 @@ export class UserController {
         const { userId, tipoCategoria, mes, ano } = req.params;
 
         // Verifica se todos os parâmetros obrigatórios foram fornecidos
-        if (!userId  || !mes || !ano) {
+        if (!userId || !mes || !ano) {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
 
-          // Define a condição de busca para categorias com base no tipoCategoria
-          // Monta a consulta condicional para as categorias
-          const categorias = await this.catRepository.find({
+        // Busca as categorias com base no tipoCategoria
+        const categorias = await this.catRepository.find({
             where: {
                 usuario: { UserId: Number(userId) },
-                ...(tipoCategoria !== '0' ? { tipo: Number(tipoCategoria) } : {}), // Aplica o filtro de tipo apenas se diferente de '0'
+                ...(tipoCategoria !== '0' ? { tipo: Number(tipoCategoria) } : {}),
             },
         });
+
         // Se não encontrar categorias, retornar um status 404
         if (categorias.length === 0) {
             return res.status(404).json({ message: 'Nenhuma categoria encontrada.' });
         }
 
-        // Buscar as transações vinculadas às categorias
+        console.info(categorias.map(cat => cat.Id)); // Loga os IDs das categorias
+
+        // Buscar as transações vinculadas às categorias usando o 'Id'
         const transacoes = await AppDataSource.createQueryBuilder()
             .select('t')
             .from(Transacao, 't')
-            .where('t.CategoriaId IN (:...categoriaIds)', { categoriaIds: categorias.map(cat => cat.CategoriaId) })
+            .where('t.CategoriaId IN (:...categoriaIds)', { categoriaIds: categorias.map(cat => cat.Id) })
             .andWhere('EXTRACT(MONTH FROM t.data) = :mes', { mes })
             .andWhere('EXTRACT(YEAR FROM t.data) = :ano', { ano })
             .getMany();
 
         // Estruturar o resultado
         const resultado = categorias
-        .map(categoria => {
-        // Filtra as transações que correspondem a esta categoria
-        const transacoesRelacionadas = transacoes.filter(t => t.CategoriaId === categoria.CategoriaId);
+            .map(categoria => {
+                // Filtra as transações que correspondem a esta categoria
+                const transacoesRelacionadas = transacoes.filter(t => t.CategoriaId === categoria.Id); // Filtra usando apenas o ID da categoria
 
-        // Retorna apenas as categorias que têm transações relacionadas
-        return {
-            categoria: {
-                CategoriaId: categoria.CategoriaId,
-                nomeCat: categoria.nomeCat,
-                tipo: categoria.tipo,
-                total: categoria.total,
-            },
-            transacoes: transacoesRelacionadas, // Adiciona as transações relacionadas
-        };
-    })
-    .filter(item => item.transacoes.length > 0);// Filtra para manter apenas categorias com transações
+                // Retorna apenas as categorias que têm transações relacionadas
+                return {
+                    categoria: {
+                        Id: categoria.Id,  // Inclui o Id da categoria
+                        CategoriaId: categoria.CategoriaId, // Inclui o CategoriaId
+                        nomeCat: categoria.nomeCat,
+                        tipo: categoria.tipo,
+                        total: categoria.total,
+                    },
+                    transacoes: transacoesRelacionadas.map(({ categoria, ...transacao }) => transacao), // Remove a categoria da transação
+                };
+            })
+            .filter(item => item.transacoes.length > 0); // Filtra para manter apenas categorias com transações
 
         // Retorna o resultado com as categorias e suas transações
         return res.status(200).json(resultado);
@@ -259,6 +262,6 @@ export class UserController {
         return res.status(500).json({ message: 'Erro ao buscar categorias e transações.' });
     }
 };
-  
+
 };
 
