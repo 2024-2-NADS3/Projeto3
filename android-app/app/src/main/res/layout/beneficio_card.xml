@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="Nome do Benefício"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:gravity="center_horizontal"
             android:fontFamily="@font/saira" />
 

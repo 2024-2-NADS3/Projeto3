@@ -191,6 +191,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ImageView btnconfiguracoes = findViewById(R.id.btn_config);
+        btnconfiguracoes.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConfiguracoesActivity.class);
+            startActivity(intent);
+        });
+
         Button btnMeusBeneficios = findViewById(R.id.btn_meus_beneficios);
         btnMeusBeneficios.setOnClickListener(v -> {
             Intent i = new Intent(this, MeusBeneficiosActivity.class);
