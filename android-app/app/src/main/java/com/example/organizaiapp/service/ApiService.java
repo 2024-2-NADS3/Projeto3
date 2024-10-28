@@ -21,7 +21,7 @@ public interface ApiService {
     Call<ResponseBody> isUsuario(@Body LoginRequest loginRequest);
 
     @POST("users/resetSenha")
-    Call<ResponseBody> isUsuario(@Body ResetRequest resetRequest);
+    Call<ResponseBody> resetarSenha(@Body ResetRequest resetRequest);
 
     @POST("users/")
     Call<ResponseBody> cadastroUser(@Body CadastroRequest cadastroRequest);

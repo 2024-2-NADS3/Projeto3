@@ -2,10 +2,10 @@ package com.example.organizaiapp.dto;
 
 public class ResetRequest {
     private String email;
-    private String senha;
+    private String newPassword;
 
-    public ResetRequest(String email, String novaSenha) {
+    public ResetRequest(String email, String newPassword) {
         this.email = email;
-        this.senha = novaSenha;
+        this.newPassword = newPassword;
     }
 }

@@ -71,7 +71,7 @@ public class ResetActivity extends AppCompatActivity {
 
     private void resetarLogin(String email, String senha) {
         ResetRequest resetRequest = new ResetRequest(email, senha);
-        Call<ResponseBody> call = apiService.isUsuario(resetRequest);
+        Call<ResponseBody> call = apiService.resetarSenha(resetRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
