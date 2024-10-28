@@ -2,6 +2,7 @@ package com.example.organizaiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,9 +18,14 @@ import com.example.organizaiapp.R;
 import com.example.organizaiapp.dto.CadastroRequest;
 import com.example.organizaiapp.dto.CategoriaDto;
 import com.example.organizaiapp.dto.LoginRequest;
+import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastroAcitivity extends AppCompatActivity {
     private ApiService apiService;
-
+    private UserSessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,7 @@ public class CadastroAcitivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+        fetchAndSaveAESKey();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -80,9 +87,11 @@ public class CadastroAcitivity extends AppCompatActivity {
 
     private void cadastrarUser(String nome, String sobrenome, String email, String senha, String tel) {
 
-        List<CategoriaDto> categorias = gerarListaCategorias();
 
-        CadastroRequest cadatroRequest = new CadastroRequest(nome, sobrenome,email,tel, senha, categorias);
+        String aeskey = sessionManager.getAesKey();
+
+        List<CategoriaDto> categorias = gerarListaCategorias();
+        CadastroRequest cadatroRequest = new CadastroRequest(nome, sobrenome,email,tel, senha, aeskey, categorias);
 
         Call<ResponseBody> call = apiService.cadastroUser(cadatroRequest);
 
@@ -91,6 +100,8 @@ public class CadastroAcitivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     Toast.makeText(CadastroAcitivity.this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
+
+                    // Chame o método para buscar e salvar a chave AES
 
                     Intent i = new Intent(CadastroAcitivity.this, LoginActivity.class);
                     startActivity(i);
@@ -135,4 +146,39 @@ public class CadastroAcitivity extends AppCompatActivity {
         }
         return categorias;
     }
+
+    private void fetchAndSaveAESKey() {
+        Call<ResponseBody> keyCall = apiService.getAESKey();
+        keyCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String aesKey = response.body().string();
+                        JSONObject jsonObject = new JSONObject(aesKey);
+                        String keyValue = jsonObject.getString("key"); // Extrai o valor da chave "key"
+                        saveAESKeyToPreferences(keyValue);
+                        Log.d("AES_KEY", "Chave AES salva com sucesso");
+                    } catch (IOException e) {
+                        Log.e("AES_KEY", "Erro ao processar a resposta da chave AES", e);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.e("AES_KEY", "Falha ao buscar chave AES: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("AES_KEY", "Erro ao conectar com o servidor para buscar chave AES", t);
+            }
+        });
+    }
+
+    private void saveAESKeyToPreferences(String aesKey) {
+        sessionManager = new UserSessionManager(getApplicationContext());
+        sessionManager.saveAESKeyToPreferences(aesKey);
+    }
+
 }

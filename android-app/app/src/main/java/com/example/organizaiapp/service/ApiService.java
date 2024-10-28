@@ -17,6 +17,9 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
+    @GET("/generate-key")
+    Call<ResponseBody> getAESKey();
+
     @POST("users/isUsuario")
     Call<ResponseBody> isUsuario(@Body LoginRequest loginRequest);
 

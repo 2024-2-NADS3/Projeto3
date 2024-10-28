@@ -7,6 +7,7 @@ public class UserSessionManager {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_USER_ID = "userId";
+    private static final String KEY_AES_KEY = "AES_KEY";
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -24,8 +25,17 @@ public class UserSessionManager {
         editor.apply();
     }
 
+    public void saveAESKeyToPreferences(String aesKey) {
+        editor.putString(KEY_AES_KEY, aesKey); // Salvando a AESKEY
+        editor.apply();
+    }
+
     public String getUserEmail() {
         return sharedPreferences.getString(KEY_EMAIL, null);
+    }
+
+    public String getAesKey() {
+        return sharedPreferences.getString(KEY_AES_KEY, null);
     }
 
     public int getUserId() {

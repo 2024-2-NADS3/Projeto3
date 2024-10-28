@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
 
+
                     isQuizAnswered(email)
                             .thenAccept(isAnswered -> {
                                 if (isAnswered) {

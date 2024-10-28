@@ -15,6 +15,8 @@ public class UserDataDto {
     private String email;
     private String telefone;
     private String senha;
+    @SerializedName("aesKey")
+    private String aesKey;
     private QuizDto quiz;
     private List<CategoriaDto> categorias;
     private List<TransacaoDto> transacoes;
@@ -98,5 +100,13 @@ public class UserDataDto {
 
     public void setTransacoes(List<TransacaoDto> transacoes) {
         this.transacoes = transacoes;
+    }
+
+    public String getAesKey() {
+        return aesKey;
+    }
+
+    public void setAesKey(String aesKey) {
+        this.aesKey = aesKey;
     }
 }
