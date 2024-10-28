@@ -35,6 +35,9 @@ export class User {
     @IsNotEmpty({ message: "A senha não pode estar vazia" })
     senha: string
 
+    @Column()
+    aesKey: string
+
     @OneToOne(() => Quiz, quiz => quiz.user)
     quiz: Quiz
 
