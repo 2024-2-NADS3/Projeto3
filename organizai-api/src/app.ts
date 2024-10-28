@@ -8,7 +8,7 @@ import transacaoRoutes from './routes/TransacaoRoutes';
 import catRoutes from './routes/CategoriaRoutes';
 
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 8080;
 // Configuração básica do CORS
 app.use(cors());
