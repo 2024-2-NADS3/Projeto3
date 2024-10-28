@@ -27,8 +27,14 @@ public interface ApiService {
     @POST("quiz/")
     Call<ResponseBody> criaQuizWithIsAnsweredFalse(@Body QuizRequest cadastroRequest);
 
+    @POST("quiz/")
+    Call<ResponseBody> criaQuizCompleto(@Body QuizRequest quizRequest);
+
     @DELETE("users/{id}")
     Call<ResponseBody> deleteUser(@Path("id") int userId);
 
+    // Dentro de ApiService.java
+    @GET("quiz/{userId}/elegibilidade")
+    Call<ResponseBody> getElegibilidade(@Path("userId") int userId);
 }
 

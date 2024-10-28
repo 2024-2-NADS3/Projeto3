@@ -54,4 +54,3 @@ public class BeneficioDetalheActivity extends AppCompatActivity {
     }
 }
 
-
