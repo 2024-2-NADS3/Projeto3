@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { app } from '../../src/app';
-import { UserController } from '../../src/controllers/UserController';
-import { User } from '../../src/entities/User';
+import { app } from '../../app';
+import { UserController } from '../../controllers/UserController';
+import { User } from '../../entities/User';
 
 
 const mockUserRepository = {
