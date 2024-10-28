@@ -100,13 +100,14 @@ public class DespesaActivity extends AppCompatActivity {
         btnAddDespesa.setOnClickListener(v -> {
             String valorStr = valorInput.getText().toString();
 
-            // Remove os separadores de milhar e formatação de moeda, se houver
-            NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+
             try {
+                // Remove os separadores de milhar e formatação de moeda, se houver
+                NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
                 Number number = format.parse(valorStr);
 
                 assert number != null;
-                BigDecimal valor = BigDecimal.valueOf(number.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal valor = new BigDecimal(number.toString()).setScale(2, RoundingMode.HALF_UP);
                 String descricao = descInput.getText().toString();
                 Long categoria = categoriaIdSelected;
                 String data = dataInput.getText().toString();
