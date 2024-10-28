@@ -3,6 +3,7 @@ package com.example.organizaiapp.service;
 import com.example.organizaiapp.dto.CadastroRequest;
 import com.example.organizaiapp.dto.LoginRequest;
 import com.example.organizaiapp.dto.QuizRequest;
+import com.example.organizaiapp.dto.ResetRequest;
 import com.example.organizaiapp.dto.TransacaoRequest;
 import com.example.organizaiapp.dto.UpdateCategoriasUserRequest;
 
@@ -18,6 +19,9 @@ public interface ApiService {
 
     @POST("users/isUsuario")
     Call<ResponseBody> isUsuario(@Body LoginRequest loginRequest);
+
+    @POST("users/resetSenha")
+    Call<ResponseBody> isUsuario(@Body ResetRequest resetRequest);
 
     @POST("users/")
     Call<ResponseBody> cadastroUser(@Body CadastroRequest cadastroRequest);
