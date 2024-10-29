@@ -47,6 +47,9 @@ public interface ApiService {
     @PUT("categoria/")
     Call<ResponseBody> updateCategoriasUser(@Body UpdateCategoriasUserRequest upRequest);
 
+    @GET("quiz/{userId}/elegibilidade")
+    Call<ResponseBody> getElegibilidade(@Path("userId") int userId);
+
 
 }
 
