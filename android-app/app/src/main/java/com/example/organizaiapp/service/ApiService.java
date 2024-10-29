@@ -10,6 +10,7 @@ import com.example.organizaiapp.dto.UpdateCategoriasUserRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -46,6 +47,9 @@ public interface ApiService {
 
     @PUT("categoria/")
     Call<ResponseBody> updateCategoriasUser(@Body UpdateCategoriasUserRequest upRequest);
+
+    @DELETE("users/{id}")
+    Call<ResponseBody> deleteUser(@Path("id") int userId);
 
     @GET("quiz/{userId}/elegibilidade")
     Call<ResponseBody> getElegibilidade(@Path("userId") int userId);

@@ -108,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
+        ImageView btnconfiguracoes = findViewById(R.id.btn_config);
+        btnconfiguracoes.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConfiguracoesActivity.class);
+            startActivity(intent);
+        });
+
         //Implementacao do BottomSheetDialog para adicionar Receita e Despesa
         btnAdicionar = findViewById(R.id.btn_adicionar);
         btnAdicionar.setOnClickListener(v -> {
