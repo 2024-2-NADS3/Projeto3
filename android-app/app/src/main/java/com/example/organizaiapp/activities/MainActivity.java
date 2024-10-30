@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -260,8 +261,21 @@ public class MainActivity extends AppCompatActivity {
 
                 // Define o comportamento de clique
                 card.setOnClickListener(v -> {
+
+                    // Filtra as transações para a categoria específica clicada
+                    ArrayList<TransacaoDto> transacoesCategoria = new ArrayList<>();
+                    for (CategoriasAndTransacaoDto cat : listdataCatTransacao) {
+                        if (cat.getCategoria().getCategoriaId() == registro.getCategoriaId()) {
+                            transacoesCategoria.addAll(cat.getTransacoes());
+                            break; // Sai do loop ao encontrar a categoria correspondente
+                        }
+                    }
+
                     Intent i = new Intent(this, CategoriaEspecificaActivity.class);
                     i.putExtra("nomeCategoria", registro.getCategoria());
+
+                    i.putParcelableArrayListExtra("especificos", transacoesCategoria);
+
                     startActivity(i);
                 });
             }
