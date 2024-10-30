@@ -42,6 +42,9 @@ public class CategoriaEspecificaActivity extends AppCompatActivity {
         ArrayList<TransacaoDto> transacoesCategoria = intent.getParcelableArrayListExtra("especificos");
 
         LinearLayout linearRegistros = findViewById(R.id.linear_registros_especifica);
+        List<CategoriaEspecificaCard> registros = new ArrayList<CategoriaEspecificaCard>();
+        registros.add(new CategoriaEspecificaCard("Dia 10", "Compras da semana", 200.00));
+        registros.add(new CategoriaEspecificaCard("Dia 20", "Compras de fraudas",300.00));
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());

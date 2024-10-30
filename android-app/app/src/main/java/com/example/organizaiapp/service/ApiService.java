@@ -1,6 +1,7 @@
 package com.example.organizaiapp.service;
 
 import com.example.organizaiapp.dto.CadastroRequest;
+import com.example.organizaiapp.dto.ElegivelDto;
 import com.example.organizaiapp.dto.LoginRequest;
 import com.example.organizaiapp.dto.QuizRequest;
 import com.example.organizaiapp.dto.ResetRequest;
@@ -52,8 +53,5 @@ public interface ApiService {
     Call<ResponseBody> deleteUser(@Path("id") int userId);
 
     @GET("quiz/{userId}/elegibilidade")
-    Call<ResponseBody> getElegibilidade(@Path("userId") int userId);
-
-
+    Call<ElegivelDto> getElegibilidade(@Path("userId") int userId);
 }
-
