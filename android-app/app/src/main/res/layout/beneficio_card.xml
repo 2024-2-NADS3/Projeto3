@@ -58,7 +58,7 @@
             android:id="@+id/txt_is_elegivel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:text="Seu perfil se encaixa nesse benefício!"
             android:textColor="@color/black"
             android:textSize="12sp"

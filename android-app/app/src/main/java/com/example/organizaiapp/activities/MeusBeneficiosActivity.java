@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.organizaiapp.R;
 import com.example.organizaiapp.domain.BeneficioCard;
 import com.example.organizaiapp.dto.ElegivelDto;
+import com.example.organizaiapp.dto.ElegivelRequest;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
 
@@ -105,24 +106,24 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
     }
 
     private void verificarElegibilidade(int userId) {
-        apiService.getElegibilidade(userId).enqueue(new Callback<ElegivelDto>() {
+        apiService.getElegibilidade(userId).enqueue(new Callback<ElegivelRequest>() {
             @Override
-            public void onResponse(Call<ElegivelDto> call, Response<ElegivelDto> response) {
+            public void onResponse(Call<ElegivelRequest> call, Response<ElegivelRequest> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
 
-                    ElegivelDto elegivelDto = response.body();
+                    ElegivelRequest elegivelDto = response.body();
 
                     // Verifica se todas as respostas de elegibilidade são falsas
-                    boolean todasInelegiveis = !elegivelDto.isCadastroUnico() && !elegivelDto.isBolsaFamilia() &&
-                            !elegivelDto.isBeneficioIdoso() && !elegivelDto.isFomentoRural();
+                    boolean todasInelegiveis = !elegivelDto.getElegivel().isCadastroUnico() && !elegivelDto.getElegivel().isBolsaFamilia() &&
+                            !elegivelDto.getElegivel().isBeneficioIdoso() && !elegivelDto.getElegivel().isFomentoRural();
 
                     // Atualiza a elegibilidade com base na resposta da API
-                    registros.get(0).setElegivel(!todasInelegiveis && elegivelDto.isCadastroUnico());
+                    registros.get(0).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isCadastroUnico());
                     registros.get(1).setElegivel(false); // Pé de Meia não tem verificação de elegibilidade
-                    registros.get(2).setElegivel(!todasInelegiveis && elegivelDto.isBolsaFamilia());
-                    registros.get(3).setElegivel(!todasInelegiveis && elegivelDto.isBeneficioIdoso());
-                    registros.get(4).setElegivel(!todasInelegiveis && elegivelDto.isFomentoRural());
+                    registros.get(2).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBolsaFamilia());
+                    registros.get(3).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBeneficioIdoso());
+                    registros.get(4).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isFomentoRural());
 
                     // Exibe os cards de benefícios com a elegibilidade aplicada
                     exibirBeneficios();
@@ -135,7 +136,7 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ElegivelDto> call, Throwable t) {
+            public void onFailure(Call<ElegivelRequest> call, Throwable t) {
                 // Em caso de falha na conexão, todos os benefícios ficam como inelegíveis
                 definirTodosComoInelegiveis();
                 Toast.makeText(MeusBeneficiosActivity.this, "Erro na conexão com a API", Toast.LENGTH_SHORT).show();
@@ -161,6 +162,7 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
 
             TextView nomeBeneficio = card.findViewById(R.id.txt_nome_beneficio);
             ImageView imgBeneficio = card.findViewById(R.id.registro_icon_beneficio);
+            TextView txt_is_elegivel = card.findViewById(R.id.txt_is_elegivel);
 
             nomeBeneficio.setText(registro.getNome());
             imgBeneficio.setImageResource(registro.getIconBeneficio());
@@ -168,6 +170,7 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
             // Aplica a transparência ao card se o benefício não for elegível
             if (!registro.isElegivel()) {
                 card.setAlpha(0.8f);
+                txt_is_elegivel.setVisibility(View.INVISIBLE);
             }
 
             // Configura o clique para abrir detalhes do benefício

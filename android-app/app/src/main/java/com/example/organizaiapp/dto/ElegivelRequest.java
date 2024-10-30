@@ -1,19 +1,13 @@
 package com.example.organizaiapp.dto;
 
 public class ElegivelRequest {
-    private int userId;
+    private ElegivelDto elegivel;
 
-    // Construtor
-    public ElegivelRequest(int userId) {
-        this.userId = userId;
+    public ElegivelDto getElegivel() {
+        return elegivel;
     }
 
-    // Getter e Setter
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setElegivel(ElegivelDto elegivel) {
+        this.elegivel = elegivel;
     }
 }
