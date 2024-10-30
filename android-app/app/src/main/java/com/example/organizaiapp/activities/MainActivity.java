@@ -421,6 +421,12 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout linearReceita = dialog.findViewById(R.id.linear_receita);
         LinearLayout linearDespesa = dialog.findViewById(R.id.linear_despesa);
 
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+
         linearReceita.setOnClickListener(v->{
             Intent i = new Intent(this, ReceitaActivity.class);
             startActivity(i);
@@ -432,12 +438,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
             dialog.cancel();
         });
-
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
 
     }
 

@@ -67,7 +67,7 @@ public class CategoriaEspecificaActivity extends AppCompatActivity {
 
             dataRegistro.setText(dataFormatada);
             descGasto.setText(registro.getDescricao());
-            valorGasto.setText("R$ " + registro.getValor());
+            valorGasto.setText("R$ " + String.format("%.2f", registro.getValor()));
 
             // Adicione o card ao LinearLayout
             linearRegistros.addView(card);
