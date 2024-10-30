@@ -108,7 +108,9 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
         apiService.getElegibilidade(userId).enqueue(new Callback<ElegivelDto>() {
             @Override
             public void onResponse(Call<ElegivelDto> call, Response<ElegivelDto> response) {
+
                 if (response.isSuccessful() && response.body() != null) {
+
                     ElegivelDto elegivelDto = response.body();
 
                     // Verifica se todas as respostas de elegibilidade são falsas
@@ -165,7 +167,7 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
 
             // Aplica a transparência ao card se o benefício não for elegível
             if (!registro.isElegivel()) {
-                card.setAlpha(0.5f);
+                card.setAlpha(0.8f);
             }
 
             // Configura o clique para abrir detalhes do benefício

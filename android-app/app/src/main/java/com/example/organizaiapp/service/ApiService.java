@@ -52,6 +52,6 @@ public interface ApiService {
     @DELETE("users/{id}")
     Call<ResponseBody> deleteUser(@Path("id") int userId);
 
-    @GET("api/elegibilidade/{userId}")
+    @GET("quiz/{userId}/elegibilidade")
     Call<ElegivelDto> getElegibilidade(@Path("userId") int userId);
 }
