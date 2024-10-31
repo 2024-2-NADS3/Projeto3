@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brancoVerde"
-    tools:context=".activities.MeusBeneficiosActivity">
+    tools:context="br.fecap.pi.organizai.activities.MeusBeneficiosActivity">
 
     <TextView
         android:id="@+id/btn_voltar_beneficios"

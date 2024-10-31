@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brancoVerde"
-    tools:context=".activities.BeneficioDetalheActivity">
+    tools:context="br.fecap.pi.organizai.activities.BeneficioDetalheActivity">
 
     <!-- Botão de Voltar -->
     <TextView

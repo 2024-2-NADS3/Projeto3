@@ -6,7 +6,7 @@
     android:background="@color/brancoVerde"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ReceitaActivity">
+    tools:context="br.fecap.pi.organizai.activities.ReceitaActivity">
 
     <TextView
         android:id="@+id/btn_voltar_receita"

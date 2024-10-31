@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.organizaiapp'
+    namespace 'br.fecap.pi.organizai'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.organizaiapp"
+        applicationId "br.fecap.pi.organizai"
         minSdk 24
         targetSdk 34
         versionCode 1

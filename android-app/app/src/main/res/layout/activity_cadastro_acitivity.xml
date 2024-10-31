@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.CadastroAcitivity">
+    tools:context="br.fecap.pi.organizai.activities.CadastroAcitivity">
 
     <!-- Retângulo de fundo verde -->
 
