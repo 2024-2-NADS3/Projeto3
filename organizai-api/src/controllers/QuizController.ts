@@ -42,4 +42,45 @@ export class QuizController {
             res.status(500).json({ message: "Erro ao criar quiz do usuário", error: errorMessage });
         }
     };
+
+     // Método para obter o quiz de um usuário por ID
+     getQuizByUserId = async (req: Request, res: Response) => {
+        try {
+            const { userId } = req.params;
+            const quiz = await this.quizRepository.findOneBy({ UserId: Number(userId) });
+            if (!quiz) {
+                return res.status(404).json({ message: "Quiz não encontrado para o usuário especificado" });
+            }
+            res.status(200).json(quiz);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+            console.error("Erro ao buscar o quiz:", errorMessage);
+            res.status(500).json({ message: "Erro ao buscar o quiz", error: errorMessage });
+        }
+    };
+    // Método para verificar a elegibilidade com base nas respostas do quiz
+    verificarElegibilidade = async (req: Request, res: Response) => {
+        try {
+            const userId = parseInt(req.params.userId, 10);
+            if (isNaN(userId)) {
+                return res.status(400).json({ message: "O ID do usuário deve ser um número válido." });
+            }
+            const quiz = await this.quizRepository.findOneBy({ UserId: userId });
+            if (!quiz) {
+                return res.status(404).json({ message: "Quiz não encontrado para o usuário especificado" });
+            }
+            // Definir critérios de elegibilidade baseados nos dados do quiz
+            const elegibilidade = {
+                cadastroUnico: quiz.isCadUni ?? false,
+                bolsaFamilia: quiz.rendaMensal ? quiz.rendaMensal <= 218 : false,
+                beneficioIdoso: quiz.isOlder ?? false,
+                fomentoRural: quiz.rendaMensal && quiz.isRural ? quiz.rendaMensal <= 400 : false,
+            };
+            res.status(200).json({ elegivel: elegibilidade });
+        } catch (error) {
+            console.error("Erro ao verificar elegibilidade:", error);
+            const errorMessage = error instanceof Error && error.message ? error.message : "Erro desconhecido";
+            res.status(500).json({ message: "Erro ao verificar elegibilidade", error: errorMessage });
+        }
+    };
 }

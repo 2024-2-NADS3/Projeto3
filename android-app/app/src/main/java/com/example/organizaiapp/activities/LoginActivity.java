@@ -15,7 +15,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.organizaiapp.R;
 //import com.example.organizaiapp.db.SqLiteHelper;
+import com.example.organizaiapp.dto.CategoriaDto;
 import com.example.organizaiapp.dto.LoginRequest;
+import com.example.organizaiapp.dto.UpdateCategoriasUserRequest;
 import com.example.organizaiapp.dto.UserDataDto;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
@@ -23,6 +25,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,19 +43,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
-//    private SqLiteHelper dbHelper;
     private ApiService apiService;
 
+    private UserDataDto userData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-//        dbHelper = new SqLiteHelper(this);
-//        criaCategoriasReceita();
-//        criaCategoriasDespesa();
-//        criaUsuarioAdmin();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://organizai-api-aghjahgkaucjddde.brazilsouth-01.azurewebsites.net/")
@@ -66,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
         TextInputEditText inputSenha = findViewById(R.id.textInputPassword);
         Button btnEntrar = findViewById(R.id.btnEntrar);
         TextView txtCadastrese = findViewById(R.id.txtCadastrese);
+        TextView txtReset = findViewById(R.id.textreset);
+
 
         btnEntrar.setOnClickListener(v -> {
             String email = Objects.requireNonNull(inputEmail.getText()).toString();
@@ -75,6 +81,13 @@ public class LoginActivity extends AppCompatActivity {
 
         txtCadastrese.setOnClickListener(v ->{
             Intent i = new Intent(LoginActivity.this, CadastroAcitivity.class);
+            startActivity(i);
+
+            finish();
+        });
+
+        txtReset.setOnClickListener(v ->{
+            Intent i = new Intent(LoginActivity.this, ResetActivity.class);
             startActivity(i);
 
             finish();
@@ -90,13 +103,16 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
 
+
                     isQuizAnswered(email)
                             .thenAccept(isAnswered -> {
                                 if (isAnswered) {
+                                    verificaCategorias(userData.getUserId(), userData.getCategorias());
                                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(i);
                                     finish();
                                 } else {
+                                    verificaCategorias(userData.getUserId(), userData.getCategorias());
                                     Intent i = new Intent(LoginActivity.this, IntroActivity.class);
                                     startActivity(i);
                                     finish();
@@ -104,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                             })
                             .exceptionally(throwable -> {
                                 Toast.makeText(LoginActivity.this, "Erro ao verificar o quiz", Toast.LENGTH_LONG).show();
+                                Log.e("API_QUIZ", "Erro ao verificar o quiz" + throwable.getMessage());
                                 return null;
                             });
                 } else {
@@ -118,12 +135,95 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void verificaCategorias(int userId, List<CategoriaDto> categoriasDb) {
+        List<CategoriaDto> categoriaOfDevice = gerarListaCategorias();
+
+        // Ordenar categoriasDb em ordem alfabética pelo nomeCat
+        Collections.sort(categoriasDb, new Comparator<CategoriaDto>() {
+            @Override
+            public int compare(CategoriaDto cat1, CategoriaDto cat2) {
+                return cat1.getNomeCat().compareTo(cat2.getNomeCat());
+            }
+        });
+
+        // Ordenar categoriaOfDevice em ordem alfabética pelo nomeCat
+        Collections.sort(categoriaOfDevice, new Comparator<CategoriaDto>() {
+            @Override
+            public int compare(CategoriaDto cat1, CategoriaDto cat2) {
+                return cat1.getNomeCat().compareTo(cat2.getNomeCat());
+            }
+        });
+
+        // Atualizar categoriaOfDevice com os totais de categoriasDb se necessário
+        for (CategoriaDto catDb : categoriasDb) {
+            for (CategoriaDto catDevice : categoriaOfDevice) {
+                // Verifica se os nomes das categorias são iguais
+                if (catDb.getNomeCat().equals(catDevice.getNomeCat())) {
+                    // Se o total da categoria do banco for diferente de 0.00, atualiza o total na categoria do dispositivo
+                    if (catDb.getTotal() != 0.00) {
+                        catDevice.setTotal(catDb.getTotal()); // Atualiza o total
+                    }
+                    break; // Sai do loop interno se a categoria for encontrada
+                }
+            }
+        }
+
+        if (categoriasDb.get(0).getCategoriaId() != categoriaOfDevice.get(0).getCategoriaId()) {
+            UpdateCategoriasUserRequest upRequest = new UpdateCategoriasUserRequest(userId, categoriaOfDevice);
+            Call<ResponseBody> call = apiService.updateCategoriasUser(upRequest);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()){
+                        Toast.makeText(LoginActivity.this, "As categorias foram sincronizadas", Toast.LENGTH_LONG).show();
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Erro ao sincronizar categorias", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(LoginActivity.this, "Erro de conexão com o servidor", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
+    private List<CategoriaDto> gerarListaCategorias() {
+        List<CategoriaDto> categorias = new ArrayList<>();
+
+        Map<String, Integer> categoriasReceita = new HashMap<>();
+        categoriasReceita.put("Outros", R.drawable.icone_outros);
+        categoriasReceita.put("Presente", R.drawable.icone_presente);
+        categoriasReceita.put("Salario", R.drawable.icone_salario);
+
+        for (Map.Entry<String, Integer> entry : categoriasReceita.entrySet()) {
+            String categoria = entry.getKey();
+            Integer id = entry.getValue();
+            categorias.add(new CategoriaDto(id,categoria,1,0.00));
+        }
+
+        Map<String, Integer> categoriasDespesa = new HashMap<>();
+        categoriasDespesa.put("Aluguel", R.drawable.icone_aluguel);
+        categoriasDespesa.put("Comida", R.drawable.icone_comida);
+        categoriasDespesa.put("Casa", R.drawable.icone_casa);
+        categoriasDespesa.put("Gasolina", R.drawable.icone_gasolina);
+        categoriasDespesa.put("Lazer", R.drawable.icone_lazer);
+        categoriasDespesa.put("Transporte", R.drawable.icone_transporte);
+        categoriasDespesa.put("Internet", R.drawable.icone_internet);
+
+        for (Map.Entry<String, Integer> entry : categoriasDespesa.entrySet()) {
+            String categoria = entry.getKey();
+            Integer id = entry.getValue();
+            categorias.add(new CategoriaDto(id,categoria,2,0.00));
+        }
+        return categorias;
+    }
 
     private CompletableFuture<Boolean> isQuizAnswered(String email) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         Call<ResponseBody> call = apiService.findUserByEmail(email);
-
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -131,9 +231,8 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         String responseBody = response.body().string();
                         Gson gson = new Gson();
-                        UserDataDto userData = gson.fromJson(responseBody, UserDataDto.class);
+                        userData = gson.fromJson(responseBody, UserDataDto.class);
 
-                        //salva na userSession o email e o id do usuario logado
                         UserSessionManager sessionManager = new UserSessionManager(getApplicationContext());
                         sessionManager.saveUserSession(userData.getEmail(), userData.getUserId());
 
@@ -143,7 +242,7 @@ public class LoginActivity extends AppCompatActivity {
                         future.completeExceptionally(e);
                     }
                 } else {
-                    future.complete(false); // Handle unsuccessful response
+                    future.completeExceptionally(new RuntimeException("Resposta não bem-sucedida: " + response.message()));
                 }
             }
 
@@ -156,166 +255,4 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    //    private void criaCategoriasReceita() {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Verificar se as categorias já existem para evitar duplicação
-//        String query = "SELECT CategoriaId FROM categoria WHERE tipo = 1";
-//        Cursor cursor = db.rawQuery(query, null);
-//
-//        if (cursor.getCount() == 0) { // Se não houver categorias ainda, insira
-//            ContentValues values = new ContentValues();
-//
-//            // Inserir categoria "Salário"
-//            values.put("CategoriaId", R.drawable.icone_salario); // ID do ícone
-//            values.put("nomeCat", "Salário");
-//            values.put("tipo", 1); // 1 para receitas
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Aluguel"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_aluguel); // ID do ícone
-//            values.put("nomeCat", "Aluguel");
-//            values.put("tipo", 1); // 1 para receitas
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Presente"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_presente); // ID do ícone
-//            values.put("nomeCat", "Presente");
-//            values.put("tipo", 1); // 1 para receitas
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Outros"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_outros); // ID do ícone
-//            values.put("nomeCat", "Outros");
-//            values.put("tipo", 1); // 1 para receitas
-//            db.insert("categoria", null, values);
-//
-//            Toast.makeText(this, "Categorias de receita criadas com sucesso", Toast.LENGTH_LONG).show();
-//        } else {
-//            Toast.makeText(this, "Categorias de receita já existem", Toast.LENGTH_LONG).show();
-//        }
-//
-//        cursor.close();
-//    }
-//
-//    private void criaCategoriasDespesa() {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Verificar se as categorias já existem para evitar duplicação
-//        String query = "SELECT CategoriaId FROM categoria WHERE tipo = 2";
-//        Cursor cursor = db.rawQuery(query, null);
-//
-//        if (cursor.getCount() == 0) { // Se não houver categorias ainda, insira
-//            ContentValues values = new ContentValues();
-//
-//            // Inserir categoria "Comida"
-//            values.put("CategoriaId", R.drawable.icone_comida); // ID do ícone
-//            values.put("nomeCat", "Comida");
-//            values.put("tipo", 2);
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Transporte"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_transporte); // ID do ícone
-//            values.put("nomeCat", "Transporte");
-//            values.put("tipo", 2);
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Gasolina"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_gasolina); // ID do ícone
-//            values.put("nomeCat", "Gasolina");
-//            values.put("tipo", 2);
-//            db.insert("categoria", null, values);
-//
-//            // Inserir categoria "Lazer"
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_lazer); // ID do ícone
-//            values.put("nomeCat", "Lazer");
-//            values.put("tipo", 2);
-//            db.insert("categoria", null, values);
-//
-//            values.clear();
-//            values.put("CategoriaId", R.drawable.icone_casa); // ID do ícone
-//            values.put("nomeCat", "Casa");
-//            values.put("tipo", 2);
-//            db.insert("categoria", null, values);
-//
-//            Toast.makeText(this, "Categorias de despesa criadas com sucesso", Toast.LENGTH_LONG).show();
-//        } else {
-//            Toast.makeText(this, "Categorias de despesa já existem", Toast.LENGTH_LONG).show();
-//        }
-//
-//        cursor.close();
-//    }
-
-
-//    private void criaUsuarioAdmin() {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Verificar se o usuário já existe para não inserir duplicado
-//        String query = "SELECT UserId FROM user WHERE email = ?";
-//        Cursor cursor = db.rawQuery(query, new String[]{"admin@gmail.com"});
-//
-//        if (cursor.getCount() == 0) {
-//            ContentValues values = new ContentValues();
-//            values.put("UserId", 1); // Definindo o ID manualmente como 1
-//            values.put("nome", "Admin");
-//            values.put("sobrenome", "User");
-//            values.put("cpf", "00000000000");
-//            values.put("email", "admin@gmail.com");
-//            values.put("telefone", "0000000000");
-//            values.put("senha", "admin");
-//
-//            long newRowId = db.insert("user", null, values);
-//
-//            if (newRowId == -1) {
-//                Toast.makeText(this, "Erro ao inserir usuário admin", Toast.LENGTH_LONG).show();
-//            } else {
-//                Toast.makeText(this, "Usuário admin criado com sucesso", Toast.LENGTH_LONG).show();
-//
-//                // Agora, associar as categorias ao usuário admin
-//                associaCategoriasAoUsuario(Long.parseLong(values.get("UserId").toString())); // ID 1 para o usuário admin
-//            }
-//        }
-//
-//        cursor.close();
-//    }
-
-//    private void associaCategoriasAoUsuario(Long userId) {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Categorias a serem associadas (IDs dos ícones)
-//        List<Integer> categoriaIds = findAllCategorias();
-//
-//        for (int categoriaId : categoriaIds) {
-//            ContentValues values = new ContentValues();
-//            values.put("UserId", userId);
-//            values.put("CategoriaId", categoriaId);
-//            db.insert("UsuarioCategoria", null, values);
-//        }
-//
-//        Toast.makeText(this, "Categorias associadas ao usuário admin", Toast.LENGTH_LONG).show();
-//    }
-
-//    private List<Integer> findAllCategorias() {
-//        List<Integer> categoriaIds = new ArrayList<>();
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//
-//        // Selecionar todos os IDs de categoria
-//        String query = "SELECT CategoriaId FROM categoria";
-//        Cursor cursor = db.rawQuery(query, null);
-//
-//        // Iterar pelo cursor e adicionar IDs à lista
-//        while (cursor.moveToNext()) {
-//            @SuppressLint("Range") int categoriaId = cursor.getInt(cursor.getColumnIndex("CategoriaId"));
-//            categoriaIds.add(categoriaId);
-//        }
-//
-//        cursor.close();
-//        return categoriaIds;
-//    }
 }

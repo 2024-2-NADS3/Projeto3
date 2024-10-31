@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/saira"
-        android:text="Fulano"
+        android:text=""
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="25sp"
@@ -64,6 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="170dp"
+        android:padding="10dp"
         android:background="@drawable/retangulo_arredondado_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,6 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="17dp"
+        android:layout_marginTop="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,5 +89,5 @@
             android:orientation="vertical" />
     </ScrollView>
 
-    
+
 </androidx.constraintlayout.widget.ConstraintLayout>

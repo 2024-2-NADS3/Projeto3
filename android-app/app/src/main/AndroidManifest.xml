@@ -17,6 +17,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ConfiguracoesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ResetActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CadastroAcitivity"
             android:exported="false" />
         <activity

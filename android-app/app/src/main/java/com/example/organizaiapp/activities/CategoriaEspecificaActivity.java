@@ -14,9 +14,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.organizaiapp.R;
 import com.example.organizaiapp.domain.CategoriaEspecificaCard;
+import com.example.organizaiapp.dto.TransacaoDto;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CategoriaEspecificaActivity extends AppCompatActivity {
 
@@ -33,13 +38,16 @@ public class CategoriaEspecificaActivity extends AppCompatActivity {
         TextView txtNomeCategoria = findViewById(R.id.txt_nome_categoria);
         txtNomeCategoria.setText(extras.getString("nomeCategoria"));
 
+        // Recebe a lista de transações específicas da categoria selecionada
+        ArrayList<TransacaoDto> transacoesCategoria = intent.getParcelableArrayListExtra("especificos");
 
         LinearLayout linearRegistros = findViewById(R.id.linear_registros_especifica);
-        List<CategoriaEspecificaCard> registros = new ArrayList<CategoriaEspecificaCard>();
-        registros.add(new CategoriaEspecificaCard("Dia 10", "Compras da semana", 200.00));
-        registros.add(new CategoriaEspecificaCard("Dia 20", "Compras de fraudas",300.00));
 
-        for (CategoriaEspecificaCard registro : registros){
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
+
+        assert transacoesCategoria != null;
+        for (TransacaoDto registro : transacoesCategoria){
             LayoutInflater inflater = LayoutInflater.from(this);
             LinearLayout card = (LinearLayout) inflater.inflate(R.layout.categoria_especifica_card, linearRegistros, false);
 
@@ -47,9 +55,19 @@ public class CategoriaEspecificaActivity extends AppCompatActivity {
             TextView descGasto = card.findViewById(R.id.descricao_gasto);
             TextView valorGasto = card.findViewById(R.id.valor_do_gasto);
 
-            dataRegistro.setText(registro.getDataDoGasto());
-            descGasto.setText(registro.getDescricaoDoGasto());
-            valorGasto.setText("R$ " + registro.getValor());
+            // Formatação da data
+            String dataFormatada;
+            try {
+                Date date = inputFormat.parse(registro.getData());
+                dataFormatada = outputFormat.format(date);
+            } catch (ParseException e) {
+                dataFormatada = registro.getData(); // Se der erro, usa a data original
+                e.printStackTrace();
+            }
+
+            dataRegistro.setText(dataFormatada);
+            descGasto.setText(registro.getDescricao());
+            valorGasto.setText("R$ " + String.format("%.2f", registro.getValor()));
 
             // Adicione o card ao LinearLayout
             linearRegistros.addView(card);
