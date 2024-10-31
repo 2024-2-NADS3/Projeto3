@@ -24,6 +24,7 @@ function generateAESKey() {
 // Rota para gerar e retornar a chave AES
 app.get('/generate-key', (req, res) => {
     try {
+        
         const aesKey = generateAESKey();
         res.json({ key: aesKey });
     } catch (error) {

@@ -11,7 +11,6 @@ router.get('/:email' as any, userController.findUserByEmail as any)
 router.post('/' as any, userController.createUser as any)
 router.post('/isUsuario' as any, userController.autenticacaoUser as any)
 router.post('/resetSenha' as any, userController.resetPassword as any)
-
 router.delete('/:id' as any, userController.deleteUser as any) 
 
 export default router;
