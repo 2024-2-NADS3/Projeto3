@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
 
+    TextView nome;
     private int categoriaAtual = 1;
     @Override
     protected void onResume() {
@@ -100,12 +101,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
         criaBarraDosMeses();
         mudaTiposCategoria();
 
+       nome = findViewById(R.id.txt_nome_usuario);
         Button btnMeusBeneficios = findViewById(R.id.btn_meus_beneficios);
         btnMeusBeneficios.setOnClickListener(v -> {
             Intent i = new Intent(this, MeusBeneficiosActivity.class);
+            i.putExtra("nome", user.getNome());
             startActivity(i);
         });
 
@@ -397,6 +402,8 @@ public class MainActivity extends AppCompatActivity {
                         String responseBody = response.body().string();
                         Gson gson = new Gson();
                         user = gson.fromJson(responseBody, UserDataDto.class);
+
+                        nome.setText("Olá, " + user.getNome());
                         buscarCategoriasByParam(user.getUserId(), 1);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

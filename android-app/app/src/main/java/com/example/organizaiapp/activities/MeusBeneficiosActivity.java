@@ -20,12 +20,16 @@ import com.example.organizaiapp.R;
 import com.example.organizaiapp.domain.BeneficioCard;
 import com.example.organizaiapp.dto.ElegivelDto;
 import com.example.organizaiapp.dto.ElegivelRequest;
+import com.example.organizaiapp.dto.UserDataDto;
 import com.example.organizaiapp.manager.UserSessionManager;
 import com.example.organizaiapp.service.ApiService;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,11 +41,13 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
     private ApiService apiService;
     private List<BeneficioCard> registros = new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_meus_beneficios);
+
 
         // Configuração do Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -50,12 +56,16 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
                 .build();
         apiService = retrofit.create(ApiService.class);
 
+
         // Inicializa a lista de benefícios
         inicializarListaBeneficios();
 
         // Obtém a elegibilidade do usuário e atualiza os cards
         UserSessionManager sessionManager = new UserSessionManager(this);
         verificarElegibilidade(sessionManager.getUserId());
+
+        TextView nome = findViewById(R.id.txt_nome_usuario);
+        nome.setText(getIntent().getStringExtra("nome"));
 
         TextView btnVoltar = findViewById(R.id.btn_voltar_beneficios);
         btnVoltar.setOnClickListener(v -> finish());
@@ -76,14 +86,14 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
                         "Regras:\n" +
                         " - Famílias com renda mensal de até meio salário mínimo por pessoa; ou\n" +
                         " - Famílias com renda total de até três salários mínimos.", R.drawable.cadastro_unico));
-        registros.add(new BeneficioCard(2L, "Pé de Meia", false,
-                "O que é?\n" +
-                        "Um programa de incentivo à poupança, com foco em ajudar pessoas de baixa renda a formarem uma reserva financeira para emergências ou aposentadoria.\n\n" +
-                        "Qual o objetivo?\n" +
-                        "Promover a educação financeira e incentivar o hábito de poupar, proporcionando maior segurança financeira para os beneficiários a longo prazo.\n\n" +
-                        "Regras:\n" +
-                        " - Participação limitada a famílias inscritas no Cadastro Único;\n" +
-                        " - O valor poupado é incentivado com um pequeno bônus mensal do governo.", R.drawable.pe_de_meia_logo));
+//        registros.add(new BeneficioCard(2L, "Pé de Meia", false,
+//                "O que é?\n" +
+//                        "Um programa de incentivo à poupança, com foco em ajudar pessoas de baixa renda a formarem uma reserva financeira para emergências ou aposentadoria.\n\n" +
+//                        "Qual o objetivo?\n" +
+//                        "Promover a educação financeira e incentivar o hábito de poupar, proporcionando maior segurança financeira para os beneficiários a longo prazo.\n\n" +
+//                        "Regras:\n" +
+//                        " - Participação limitada a famílias inscritas no Cadastro Único;\n" +
+//                        " - O valor poupado é incentivado com um pequeno bônus mensal do governo.", R.drawable.pe_de_meia_logo));
         registros.add(new BeneficioCard(3L, "Bolsa Família", false,
                 "O que é?\n" +"Um programa de transferência direta de renda, destinado às famílias em situação de pobreza e extrema pobreza em todo o país, de modo que consigam superar a situação de vulnerabilidade social.\n" +"Qual o objetivo?\n"+"\u200BPromover a cidadania com garantia de renda e apoiar, por meio dos benefícios ofertados, a articulação de políticas voltadas aos beneficiários, com vistas à superação das vulnerabilidades sociais das famílias.\n"+"Regras:\n"+"São elegíveis ao Programa Bolsa Família as famílias:\n" + " - inscritas no CadÚnico; e\n"+" - cuja renda familiar per capita mensal seja igual ou inferior a R$ 218,00 (duzentos e dezoito reais).", R.drawable.bolsa_familia_logo));
         registros.add(new BeneficioCard(4L, "Prestração Continuada(BPC)", false,
@@ -120,10 +130,10 @@ public class MeusBeneficiosActivity extends AppCompatActivity {
 
                     // Atualiza a elegibilidade com base na resposta da API
                     registros.get(0).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isCadastroUnico());
-                    registros.get(1).setElegivel(false); // Pé de Meia não tem verificação de elegibilidade
-                    registros.get(2).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBolsaFamilia());
-                    registros.get(3).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBeneficioIdoso());
-                    registros.get(4).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isFomentoRural());
+//                    registros.get(1).setElegivel(false); // Pé de Meia não tem verificação de elegibilidade
+                    registros.get(1).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBolsaFamilia());
+                    registros.get(2).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isBeneficioIdoso());
+                    registros.get(3).setElegivel(!todasInelegiveis && elegivelDto.getElegivel().isFomentoRural());
 
                     // Exibe os cards de benefícios com a elegibilidade aplicada
                     exibirBeneficios();

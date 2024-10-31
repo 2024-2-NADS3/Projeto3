@@ -62,9 +62,6 @@ public class ResetActivity extends AppCompatActivity {
         });
 
         btnVoltar.setOnClickListener(v ->{
-            Intent i = new Intent(ResetActivity.this, LoginActivity.class);
-            startActivity(i);
-
             finish();
         });
     }
