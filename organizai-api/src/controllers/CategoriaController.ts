@@ -9,11 +9,12 @@ export class CategoriaController {
 
   updateCategoriasUser = async (req: Request, res: Response) => {
     try {
-      const { userId, categorias } = req.body; // 'categorias' é a lista de categorias do dispositivo
-
+      const { UserId, categorias } = req.body; // 'categorias' é a lista de categorias do dispositivo
+      
+      console.log("userId extraído do req.body:", UserId);
       // Buscar o usuário no banco de dados
       const user = await this.userRepository.findOne({
-        where: { UserId: userId },
+        where: { UserId: UserId },
         relations: ["categorias"], // Certifique-se de que isso está correto
       });
 
@@ -21,18 +22,20 @@ export class CategoriaController {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
 
+      
       await this.catRepository
-        .createQueryBuilder()
-        .delete()
-        .from(Categoria)
-        .where("usuarioUserId = :userId", { userId })
-        .execute();
+      .createQueryBuilder()
+      .delete()
+      .where("usuario.UserId = :UserId", { UserId })
+      .execute();
+   
         
-      console.log("Categorias deletadas");
+      console.log("Categorias deletadas " + UserId);
 
-      // Criar novas categorias a partir das categorias enviadas pelo dispositivo
+     // Criar novas categorias a partir das categorias enviadas pelo dispositivo
       const novasCategorias = categorias.map(
         (categoriaDoDispositivo: {
+          Id: number;
           CategoriaId: number;
           nomeCat: string;
           tipo: number;
