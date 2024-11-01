@@ -2,10 +2,12 @@ import { AppDataSource } from "../data-source";
 import { Request, Response } from "express";
 import { User } from "../entities/User";
 import { Categoria } from "../entities/Categoria";
+import { Transacao } from "../entities/Transacao";
 
 export class CategoriaController {
   private userRepository = AppDataSource.getRepository(User);
   private catRepository = AppDataSource.getRepository(Categoria);
+  private tranRepository = AppDataSource.getRepository(Transacao);
 
   updateCategoriasUser = async (req: Request, res: Response) => {
     try {
@@ -15,23 +17,31 @@ export class CategoriaController {
       // Buscar o usuário no banco de dados
       const user = await this.userRepository.findOne({
         where: { UserId: UserId },
-        relations: ["categorias"], // Certifique-se de que isso está correto
+        relations: ["categorias", "transacoes"], // Certifique-se de que isso está correto
       });
 
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
 
-      
-      await this.catRepository
+    if(user.transacoes.length !== 0){
+       await this.tranRepository
       .createQueryBuilder()
       .delete()
       .where("usuario.UserId = :UserId", { UserId })
       .execute();
+      console.log("Transações deletadas ");
+    }
    
-        
-      console.log("Categorias deletadas " + UserId);
-
+      if(user.categorias.length !== 0){
+        await this.catRepository
+        .createQueryBuilder()
+        .delete()
+        .where("usuario.UserId = :UserId", { UserId })
+        .execute();
+        console.log("Categorias deletadas ");
+      }
+      
      // Criar novas categorias a partir das categorias enviadas pelo dispositivo
       const novasCategorias = categorias.map(
         (categoriaDoDispositivo: {
