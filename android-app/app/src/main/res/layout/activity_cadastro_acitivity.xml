@@ -187,12 +187,13 @@
 
     <TextView
         android:id="@+id/politicaText"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ao continuar você concorda com as Políticas de privacidade e Termos de uso"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:layout_marginHorizontal="15dp"
         app:layout_constraintBottom_toTopOf="@+id/btnCadastrar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
