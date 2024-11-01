@@ -68,25 +68,27 @@
         android:background="@drawable/opcoesconfig"
         android:orientation="vertical"
         android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider">
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintVertical_bias="0.046">
 
         <!-- Texto para Redefinir Senha -->
         <TextView
             android:id="@+id/TextViewResetarSenha"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Redefinir Senha"
-            android:fontFamily="@font/saira_bold"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:padding="10dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:textStyle="bold"
-            android:background="?attr/selectableItemBackground"
-            android:layout_marginBottom="10dp"/>
+            android:fontFamily="@font/saira_bold"
+            android:text="Redefinir Senha"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <!-- Divisória entre opções -->
         <View
@@ -98,17 +100,16 @@
         <TextView
             android:id="@+id/TextViewLogout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sair"
-            android:fontFamily="@font/saira_bold"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:padding="10dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:textStyle="bold"
-            android:background="?attr/selectableItemBackground"
-            android:layout_marginBottom="10dp"/>
+            android:fontFamily="@font/saira_bold"
+            android:text="Sair"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <!-- Divisória entre opções -->
         <View
@@ -120,13 +121,12 @@
         <TextView
             android:id="@+id/TextViewExcluirConta"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="@font/saira_bold"
-            android:padding="15dp"
             android:text="Excluir Conta"
             android:textColor="#F44336"
             android:textSize="18sp" />
