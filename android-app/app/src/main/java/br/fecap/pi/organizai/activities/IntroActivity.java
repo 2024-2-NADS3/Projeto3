@@ -105,7 +105,7 @@ public class IntroActivity extends AppCompatActivity {
                     Intent i = new Intent(IntroActivity.this, MainActivity.class);
                     startActivity(i);
                 } else if (response.code() == 204) {
-                    Toast.makeText(IntroActivity.this, "Já existe um quiz para esse usuário!", Toast.LENGTH_SHORT).show();
+                    //Nesse caso já existe um quiz criado para o usuário, ele só nao foi respondido ainda
                     Intent i = new Intent(IntroActivity.this, MainActivity.class);
                     startActivity(i);
                 } else {
