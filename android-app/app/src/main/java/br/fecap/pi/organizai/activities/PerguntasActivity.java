@@ -101,7 +101,7 @@ public class PerguntasActivity extends AppCompatActivity {
             case 3:
                 numMoradores.setVisibility(View.INVISIBLE);
                 btnProxPer.setVisibility(View.INVISIBLE);
-                quizRequest.setQtnPorFamilia(Integer.valueOf(numMoradores.getText().toString()));
+                quizRequest.setQtnPorFamilia(Integer.valueOf(numMoradores.getText().toString().isEmpty() ? "0" : numMoradores.getText().toString()));
                 viewById.setText("Alguém do seu grupo familiar tem 65 anos ou mais?");
                 btnSimIdoso.setVisibility(View.VISIBLE);
                 btnNaoIdoso.setVisibility(View.VISIBLE);
