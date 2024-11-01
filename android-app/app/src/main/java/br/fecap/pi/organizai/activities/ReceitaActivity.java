@@ -99,28 +99,32 @@ public class ReceitaActivity extends AppCompatActivity {
 
 
             try {
-                // Remove os separadores de milhar e formatação de moeda, se houver
-                NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
-                Number number = format.parse(valorStr);
+                // Substitui a vírgula por ponto para padronizar a entrada
+                String valorStrFormatado = valorStr.replace(",", ".");
 
-                assert number != null;
-                BigDecimal valor = new BigDecimal(number.toString()).setScale(2, RoundingMode.HALF_UP);
+                // Remove possíveis separadores de milhar (espaços, pontos ou vírgulas)
+                valorStrFormatado = valorStrFormatado.replaceAll("[^\\d.]", "");
+
+                // Converte a string para BigDecimal diretamente
+                BigDecimal valor = new BigDecimal(valorStrFormatado).setScale(2, RoundingMode.HALF_UP);
+
                 String descricao = descInput.getText().toString();
                 Long categoria = categoriaIdSelected;
                 String data = dataInput.getText().toString();
 
-            if (valor == null || descricao.isEmpty() || categoria == null || data.isEmpty()) {
-                Toast.makeText(this, "Todos os campos precisam ser preenchidos", Toast.LENGTH_LONG).show();
-            } else if (valor.equals(new BigDecimal("0.00"))) {
-                Toast.makeText(this, "Valor não pode ser R$ 0.00", Toast.LENGTH_LONG).show();
-            } else {
-                TransacaoRequest tr = new TransacaoRequest(user.getUserId(),categoria,true, valor,descricao,data);
-                inserirTransacao(tr);
-                Intent i = new Intent(this, MainActivity.class);
-                startActivity(i);
-            }
-            } catch (ParseException e) {
+                if (valor == null || descricao.isEmpty() || categoria == null || data.isEmpty()) {
+                    Toast.makeText(this, "Todos os campos precisam ser preenchidos", Toast.LENGTH_LONG).show();
+                } else if (valor.equals(new BigDecimal("0.00"))) {
+                    Toast.makeText(this, "Valor não pode ser R$ 0.00", Toast.LENGTH_LONG).show();
+                } else {
+                    TransacaoRequest tr = new TransacaoRequest(user.getUserId(), categoria, true, valor, descricao, data);
+                    inserirTransacao(tr);
+                    Intent i = new Intent(this, MainActivity.class);
+                    startActivity(i);
+                }
+            } catch (NumberFormatException e) {
                 Log.e("Format Error", "Erro ao formatar valor " + e);
+                Toast.makeText(this, "Formato de valor inválido", Toast.LENGTH_LONG).show();
             }
         });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
