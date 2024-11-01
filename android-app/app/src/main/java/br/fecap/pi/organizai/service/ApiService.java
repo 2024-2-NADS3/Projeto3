@@ -54,4 +54,7 @@ public interface ApiService {
 
     @GET("quiz/{userId}/elegibilidade")
     Call<ElegivelRequest> getElegibilidade(@Path("userId") int userId);
+
+    @DELETE("transacao/{id}")
+    Call<ResponseBody> excluirTransacaoEspecifica(@Path("id") int transacaoId);
 }
