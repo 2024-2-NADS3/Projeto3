@@ -86,6 +86,79 @@ export class TransacaoController {
             res.status(500).json({ message: "Erro ao buscar transações", error });
         }
     };
+
+    atualizarTransacao = async (req: Request, res: Response) => {
+        try {
+            const transacaoId = Number(req.params.transacaoId);
+            const updates = req.body;
+    
+            // Busca a transação pelo ID
+            const transacao = await this.transRepository.findOne({ where: { TransacaoId: transacaoId } });
+    
+            // Verifica se a transação existe
+            if (!transacao) {
+                return res.status(404).json({ message: "Transação não encontrada." });
+            }
+    
+            // Se uma CategoriaId for fornecida, verifica se a categoria existe e pertence ao usuário
+            if (updates.CategoriaId) {
+                const categoria = await this.catRepository.findOne({
+                    where: {
+                        Id: updates.CategoriaId,
+                        usuario: { UserId: updates.UsuarioId || transacao.UsuarioId } // Usa o usuário atual se não for fornecido
+                    }
+                });
+    
+                if (!categoria) {
+                    return res.status(404).json({ message: "Categoria não encontrada." });
+                }
+                updates.categoria = categoria;
+            }
+    
+            // Mescla os dados da transação atual com os novos dados fornecidos no body
+            const updatedTransacao = this.transRepository.create({
+                ...transacao,
+                ...updates
+            });
+    
+            // Salva as alterações
+            const tranSaved = await this.transRepository.save(updatedTransacao);
+    
+            res.status(200).json({
+                transacao: tranSaved,
+                categoria: updates.categoria || transacao.categoria // Retorna a categoria atualizada, se houver
+            });
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+            console.error(`Erro ao atualizar transação: ${errorMessage}`);
+    
+            res.status(500).json({ message: "Erro ao atualizar transação", error: errorMessage });
+        }
+    };
+
+    excluirTransacao = async (req: Request, res: Response) => {
+        try {
+            const transacaoId = Number(req.params.id);
+    
+            // Busca a transação pelo ID
+            const transacao = await this.transRepository.findOne({ where: { TransacaoId: transacaoId } });
+    
+            // Verifica se a transação existe
+            if (!transacao) {
+                return res.status(404).json({ message: "Transação não encontrada." });
+            }
+    
+            // Exclui a transação
+            await this.transRepository.remove(transacao);
+    
+            res.status(200).json({ message: "Transação excluída com sucesso." });
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+            console.error(`Erro ao excluir transação: ${errorMessage}`);
+    
+            res.status(500).json({ message: "Erro ao excluir transação", error: errorMessage });
+        }
+    };
     
 }
 

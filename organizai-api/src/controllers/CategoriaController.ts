@@ -2,37 +2,50 @@ import { AppDataSource } from "../data-source";
 import { Request, Response } from "express";
 import { User } from "../entities/User";
 import { Categoria } from "../entities/Categoria";
+import { Transacao } from "../entities/Transacao";
 
 export class CategoriaController {
   private userRepository = AppDataSource.getRepository(User);
   private catRepository = AppDataSource.getRepository(Categoria);
+  private tranRepository = AppDataSource.getRepository(Transacao);
 
   updateCategoriasUser = async (req: Request, res: Response) => {
     try {
-      const { userId, categorias } = req.body; // 'categorias' é a lista de categorias do dispositivo
-
+      const { UserId, categorias } = req.body; // 'categorias' é a lista de categorias do dispositivo
+      
+      console.log("userId extraído do req.body:", UserId);
       // Buscar o usuário no banco de dados
       const user = await this.userRepository.findOne({
-        where: { UserId: userId },
-        relations: ["categorias"], // Certifique-se de que isso está correto
+        where: { UserId: UserId },
+        relations: ["categorias", "transacoes"], // Certifique-se de que isso está correto
       });
 
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
 
-      await this.catRepository
+    if(user.transacoes.length !== 0){
+       await this.tranRepository
+      .createQueryBuilder()
+      .delete()
+      .where("usuario.UserId = :UserId", { UserId })
+      .execute();
+      console.log("Transações deletadas ");
+    }
+   
+      if(user.categorias.length !== 0){
+        await this.catRepository
         .createQueryBuilder()
         .delete()
-        .from(Categoria)
-        .where("usuarioUserId = :userId", { userId })
+        .where("usuario.UserId = :UserId", { UserId })
         .execute();
-        
-      console.log("Categorias deletadas");
-
-      // Criar novas categorias a partir das categorias enviadas pelo dispositivo
+        console.log("Categorias deletadas ");
+      }
+      
+     // Criar novas categorias a partir das categorias enviadas pelo dispositivo
       const novasCategorias = categorias.map(
         (categoriaDoDispositivo: {
+          Id: number;
           CategoriaId: number;
           nomeCat: string;
           tipo: number;

@@ -12,6 +12,7 @@ export class UserController {
   private userRepository = AppDataSource.getRepository(User);
   private catRepository = AppDataSource.getRepository(Categoria);
   private quizRepository = AppDataSource.getRepository(Quiz);
+  private tranRepository = AppDataSource.getRepository(Transacao);
   
 
   createUser = async (req: Request, res: Response) => {
@@ -178,20 +179,36 @@ export class UserController {
         return res.status(400).json({ message: "O Id não pode ser nulo." });
       }
       // Encontra o usuário
-      const user = await this.userRepository.findOne({where: {
-        UserId: Number(id)
-      } });
+      const user = await this.userRepository.findOne({
+        where: { UserId: Number(id) },
+        relations: ["categorias","quiz", "transacoes"], // Certifique-se de que isso está correto
+      });
   
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
 
-      const quiz = await this.quizRepository.findOne({ where: { UserId: Number(id) } });
-    
-      if (quiz) {
-      await this.quizRepository.delete(quiz.QuizId);
+      if(user.quiz !== null){
+        await this.quizRepository.delete(user.quiz.UserId);
+      }
       
-    }
+      if(user.transacoes.length !== 0){
+        await this.tranRepository
+       .createQueryBuilder()
+       .delete()
+       .where("usuario.UserId = :id", { id })
+       .execute();
+       console.log("Transações deletadas ");
+     }
+    
+       if(user.categorias.length !== 0){
+         await this.catRepository
+         .createQueryBuilder()
+         .delete()
+         .where("usuario.UserId = :id", { id })
+         .execute();
+         console.log("Categorias deletadas ");
+       }
   
       await this.userRepository.delete(id);
       
