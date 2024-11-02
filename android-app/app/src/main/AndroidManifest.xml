@@ -8,46 +8,52 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_oragnizai_foreground"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_oragnizai_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OrganizaiApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activities.CadastroAcitivity"
+            android:name="br.fecap.pi.organizai.activities.ConfiguracoesActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.DespesaActivity"
+            android:name="br.fecap.pi.organizai.activities.ResetActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="br.fecap.pi.organizai.activities.CadastroAcitivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ReceitaActivity"
+            android:name="br.fecap.pi.organizai.activities.DespesaActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.BeneficioDetalheActivity"
+            android:name="br.fecap.pi.organizai.activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MeusBeneficiosActivity"
+            android:name="br.fecap.pi.organizai.activities.ReceitaActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.CategoriaEspecificaActivity"
+            android:name="br.fecap.pi.organizai.activities.BeneficioDetalheActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.PerguntasActivity"
+            android:name="br.fecap.pi.organizai.activities.MeusBeneficiosActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name="br.fecap.pi.organizai.activities.CategoriaEspecificaActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.IntroActivity"
+            android:name="br.fecap.pi.organizai.activities.PerguntasActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="br.fecap.pi.organizai.activities.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name="br.fecap.pi.organizai.activities.IntroActivity"
+            android:exported="false" />
+        <activity
+            android:name="br.fecap.pi.organizai.activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

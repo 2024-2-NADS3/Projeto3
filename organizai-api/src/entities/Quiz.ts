@@ -30,7 +30,7 @@ export class Quiz {
     @Column("date")
     dataCriacao: Date
 
-    @OneToOne(() => User, user => user.quiz)
+    @OneToOne(() => User, user => user.quiz, { onDelete: 'CASCADE' })
     @JoinColumn({ name: "UserId" })
     user: User
 }

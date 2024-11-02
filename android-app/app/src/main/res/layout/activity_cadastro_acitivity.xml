@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.CadastroAcitivity">
+    tools:context="br.fecap.pi.organizai.activities.CadastroAcitivity">
 
     <!-- Retângulo de fundo verde -->
 
@@ -174,7 +174,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/input_rounded_corners"
-            android:drawableStart="@drawable/ic_password"
+            android:drawableStart="@drawable/ic_phone"
             android:drawablePadding="8dp"
             android:hint="(DD)0000-0000"
             android:inputType="phone"
@@ -187,12 +187,13 @@
 
     <TextView
         android:id="@+id/politicaText"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ao continuar você concorda com as Políticas de privacidade e Termos de uso"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:layout_marginHorizontal="15dp"
         app:layout_constraintBottom_toTopOf="@+id/btnCadastrar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -214,7 +215,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/politicaText" />
 
-<!--    <TextView-->
+    <ImageButton
+        android:id="@+id/btnVoltar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Voltar"
+        android:onClick="voltar"
+        android:src="@drawable/ic_voltar"
+        app:layout_constraintBottom_toTopOf="@+id/titulo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+    <!--    <TextView-->
 <!--        android:id="@+id/textEntrar"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->

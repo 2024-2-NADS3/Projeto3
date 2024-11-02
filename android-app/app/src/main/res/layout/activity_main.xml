@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".activities.MainActivity">
+    tools:context="br.fecap.pi.organizai.activities.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar_constraint"
@@ -20,45 +20,30 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/foto_usuario"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="36dp"
+        <TextView
+            android:id="@+id/txt_nome_usuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/saira"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.124"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/RoundedImageView"
-            app:srcCompat="@color/black" />
-
-        <ImageView
-            android:id="@+id/btn_info"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.245"
-            app:layout_constraintStart_toEndOf="@+id/btn_olho_aberto"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_info" />
-
-        <ImageView
-            android:id="@+id/btn_olho_aberto"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/foto_usuario"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_olho_aberto" />
+            app:layout_constraintVertical_bias="0.507" />
 
         <ImageView
             android:id="@+id/btn_config"
             android:layout_width="28dp"
             android:layout_height="28dp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_info"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_config" />
 
@@ -111,10 +96,10 @@
             android:id="@+id/btn_meus_beneficios"
             android:layout_width="180dp"
             android:layout_height="45dp"
-            android:backgroundTint="@color/verdeForte"
-            android:text="Meus benefícios"
+            android:backgroundTint="@color/white"
+            android:text="Saiba mais"
             android:textAlignment="center"
-            android:textColor="@color/brancoVerde"
+            android:textColor="@color/black"
             android:textSize="15sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -182,7 +167,7 @@
             android:layout_width="250dp"
             android:layout_height="25dp"
             android:fontFamily="@font/saira"
-            android:text="R$ 500,00"
+            android:text="R$ 0.00"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="17sp"
@@ -231,7 +216,7 @@
             android:layout_height="30dp"
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/saira"
-            android:text="R$ 300,00"
+            android:text="R$ 0.00"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="15sp"
@@ -264,7 +249,7 @@
             android:layout_height="30dp"
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/saira"
-            android:text="R$ 200,00"
+            android:text="R$ 0.00"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="15sp"
@@ -313,9 +298,10 @@
             android:id="@+id/vertical_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:fillViewport="true"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -331,10 +317,12 @@
         <TextView
             android:id="@+id/txt_registro_vazio"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/saira"
             android:gravity="center"
-            android:text="Não há registros para esse mês"
+            android:text="Nenhum registro encontrado"
+            android:visibility="gone"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="18sp"

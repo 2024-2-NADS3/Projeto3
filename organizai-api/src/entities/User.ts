@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToMany, JoinTable, Unique, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, Unique } from "typeorm"
 import { Quiz } from "./Quiz"
 import { Categoria } from "./Categoria"
 import { Transacao } from "./Transacao"
@@ -35,11 +35,13 @@ export class User {
     @IsNotEmpty({ message: "A senha não pode estar vazia" })
     senha: string
 
+    @Column()
+    aesKey: string
+
     @OneToOne(() => Quiz, quiz => quiz.user)
     quiz: Quiz
 
-    @ManyToMany(() => Categoria)
-    @JoinTable({ name: "UsuarioCategoria" })
+    @OneToMany(() => Categoria, categoria => categoria.usuario)
     categorias: Categoria[]
 
     @OneToMany(() => Transacao, transacao => transacao.usuario)

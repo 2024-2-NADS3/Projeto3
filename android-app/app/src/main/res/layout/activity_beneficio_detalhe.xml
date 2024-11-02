@@ -6,8 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brancoVerde"
-    tools:context=".activities.BeneficioDetalheActivity">
+    tools:context="br.fecap.pi.organizai.activities.BeneficioDetalheActivity">
 
+    <!-- Botão de Voltar -->
     <TextView
         android:id="@+id/btn_voltar_beneficios_detalhe"
         android:layout_width="50dp"
@@ -25,22 +26,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
+    <!-- Imagem do Benefício -->
     <ImageView
         android:id="@+id/img_beneficio"
-        android:layout_width="0dp"
-        android:layout_height="134dp"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
         android:scaleType="centerCrop"
+        android:maxHeight="190dp"
+        android:maxWidth="190dp"
         app:layout_constraintBottom_toTopOf="@+id/bg_card_beneficios"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/cadastro_unico" />
+
 
     <View
         android:id="@+id/bg_card_beneficios"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="190dp"
         android:background="@drawable/retangulo_arredondado_bg"
@@ -49,16 +52,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+    <!-- Nome do Benefício -->
     <TextView
         android:id="@+id/txt_nome_beneficio_detalhe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/saira"
-        android:text="Nome do beneficio"
+        android:text="Nome do benefício"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/bg_card_beneficios"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,22 +70,38 @@
         app:layout_constraintTop_toTopOf="@+id/bg_card_beneficios"
         app:layout_constraintVertical_bias="0.063" />
 
+    <!-- Status de Elegibilidade -->
+    <TextView
+        android:id="@+id/txt_elegibilidade_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/saira"
+        android:text="Status de Elegibilidade"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/txt_nome_beneficio_detalhe"
+        app:layout_constraintBottom_toTopOf="@+id/txt_descricao_beneficio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <!-- Descrição do Benefício -->
     <TextView
         android:id="@+id/txt_descricao_beneficio"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/saira"
-        android:text=""
-        android:padding="20dp"
-        android:textAlignment="textStart"
+        android:text="Descrição do benefício vai aqui."
+        android:padding="15dp"
+        android:textAlignment="viewStart"
         android:textColor="@color/white"
-        android:textSize="23sp"
+        android:textSize="15sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="@+id/bg_card_beneficios"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="@+id/bg_card_beneficios"
-        app:layout_constraintTop_toBottomOf="@+id/txt_nome_beneficio_detalhe"
-        app:layout_constraintVertical_bias="0.176" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_elegibilidade_status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

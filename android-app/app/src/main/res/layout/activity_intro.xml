@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.IntroActivity">
+    tools:context="br.fecap.pi.organizai.activities.IntroActivity">
 
 
     <TextView
@@ -39,8 +39,8 @@
         android:id="@+id/txt_pergunta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/saira_bold"
         android:layout_marginHorizontal="8dp"
+        android:fontFamily="@font/saira_bold"
         android:paddingHorizontal="15dp"
         android:paddingVertical="10dp"
         android:text="Obrigado por escolher a OrganizAI, como seu app de organização de despesas!"
@@ -74,9 +74,9 @@
         android:layout_width="145dp"
         android:layout_height="51dp"
         android:layout_marginStart="28dp"
+        android:layout_marginTop="62dp"
         android:layout_marginBottom="28dp"
         android:backgroundTint="@color/vermelhoCancel"
-        android:onClick="handlePularPerguntas"
         android:text="Pular"
         android:textAlignment="center"
         android:textColor="@color/black"
@@ -84,6 +84,9 @@
         android:textStyle="bold"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/btn_proximo"
+        app:layout_constraintHorizontal_bias="0.153"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_pergunta" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
