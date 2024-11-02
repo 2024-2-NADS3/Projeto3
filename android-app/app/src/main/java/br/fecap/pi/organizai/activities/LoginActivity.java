@@ -89,8 +89,6 @@ public class LoginActivity extends AppCompatActivity {
         txtReset.setOnClickListener(v ->{
             Intent i = new Intent(LoginActivity.this, ResetActivity.class);
             startActivity(i);
-
-            finish();
         });
     }
 
