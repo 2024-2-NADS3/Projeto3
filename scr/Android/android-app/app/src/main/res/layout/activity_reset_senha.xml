@@ -125,7 +125,6 @@
         android:layout_margin="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Voltar"
-        android:onClick="voltar"
         android:src="@drawable/ic_voltar"
         app:layout_constraintBottom_toTopOf="@+id/titulo"
         app:layout_constraintEnd_toEndOf="parent"

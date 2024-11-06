@@ -17,43 +17,46 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="br.fecap.pi.organizai.activities.ConfiguracoesActivity"
+            android:name=".activities.ConstrucaoActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.ResetActivity"
+            android:name=".activities.ConfiguracoesActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.CadastroAcitivity"
+            android:name=".activities.ResetActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.DespesaActivity"
+            android:name=".activities.CadastroAcitivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.LoginActivity"
+            android:name=".activities.DespesaActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.ReceitaActivity"
+            android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.BeneficioDetalheActivity"
+            android:name=".activities.ReceitaActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.MeusBeneficiosActivity"
+            android:name=".activities.BeneficioDetalheActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.CategoriaEspecificaActivity"
+            android:name=".activities.MeusBeneficiosActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.PerguntasActivity"
+            android:name=".activities.CategoriaEspecificaActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.MainActivity"
+            android:name=".activities.PerguntasActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.IntroActivity"
+            android:name=".activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name="br.fecap.pi.organizai.activities.SplashActivity"
+            android:name=".activities.IntroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
