@@ -41,7 +41,7 @@ O OrganizAi é um aplicativo que te ajuda a controlar suas finanças de forma si
  &emsp;|-->Tablet<br>
  &emsp;|-->Icone<br>
 |-->src<br>
- &emsp;|-->Backend/organizai-api<br>
+ &emsp;|-->Android/android-app<br>
  &emsp;|-->Backend/organizai-api<br>
 |readme.md<br>
 
