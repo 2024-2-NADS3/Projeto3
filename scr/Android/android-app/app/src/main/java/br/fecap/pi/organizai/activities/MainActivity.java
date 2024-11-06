@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView btnAdicionar;
 
+    ImageView btnBeneficios;
+
     UserDataDto user;
 
     private List<CategoriasAndTransacaoDto> listdataCatTransacao;
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         apiService = retrofit.create(ApiService.class);
 
+
+
         buscaPorUsuarioByEmail();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -116,6 +120,18 @@ public class MainActivity extends AppCompatActivity {
         ImageView btnconfiguracoes = findViewById(R.id.btn_config);
         btnconfiguracoes.setOnClickListener(view -> {
             Intent intent = new Intent(this, ConfiguracoesActivity.class);
+            startActivity(intent);
+        });
+
+        ImageView btnIa = findViewById(R.id.btn_ia);
+        btnIa.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConstrucaoActivity.class);
+            startActivity(intent);
+        });
+
+        ImageView btnBeneficios = findViewById(R.id.btn_beneficios);
+        btnBeneficios.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConstrucaoActivity.class);
             startActivity(intent);
         });
 
