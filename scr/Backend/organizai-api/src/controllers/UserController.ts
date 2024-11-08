@@ -88,6 +88,8 @@ export class UserController {
   };
 
   findUserByEmail = async (req: Request, res: Response) => {
+    // tem uma implementacao de cache aqui! Ela esta errada, serviu para que eu aprendesse. 
+    // Notei tambem que não temos uma forma muito eficiente de usar cache por enquanto. Os dados são muito multaveis no nosso sistema
     try {
       const { email } = req.params;
 
