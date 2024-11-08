@@ -7,6 +7,7 @@ import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { Quiz } from '../entities/Quiz';
 import { Transacao } from '../entities/Transacao';
+import { redisService } from '../redisconfig';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
@@ -93,6 +94,12 @@ export class UserController {
         if (!email) {
            return res.status(400).json({ message: "Email é obrigatório" });
         }
+
+        // Tenta buscar do cache primeiro
+        const cachedUser = await redisService.get(`user:email:${email}`);
+        if (cachedUser) {
+          return res.json(cachedUser);
+        }
     
         const user = await this.userRepository.findOneBy({ email });
     
@@ -103,6 +110,10 @@ export class UserController {
             where: { UserId: user.UserId },
             relations: ['categorias', 'quiz', 'transacoes']
           });
+
+           // Salva no cache por 1 hora (3600 segundos)
+          await redisService.set(`user:email:${email}`, userWithCategoriesAndQuiz, 3600);
+      
           return res.json(userWithCategoriesAndQuiz);
         }
       } catch (error) {
@@ -228,6 +239,13 @@ export class UserController {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
 
+        // Tenta buscar do cache primeiro
+      const cacheKey = `user:${userId}:transactions:tipo-${tipoCategoria}:mes-${mes}:ano-${ano}`;
+      const cachedResult = await redisService.get(cacheKey);
+      if (cachedResult) {
+        return res.status(200).json(cachedResult);
+      }
+
         // Busca as categorias com base no tipoCategoria
         const categorias = await this.catRepository.find({
             where: {
@@ -240,8 +258,6 @@ export class UserController {
         if (categorias.length === 0) {
             return res.status(404).json({ message: 'Nenhuma categoria encontrada.' });
         }
-
-        console.info(categorias.map(cat => cat.Id)); // Loga os IDs das categorias
 
         // Buscar as transações vinculadas às categorias usando o 'Id'
         const transacoes = await AppDataSource.createQueryBuilder()
@@ -272,6 +288,8 @@ export class UserController {
             })
             .filter(item => item.transacoes.length > 0); // Filtra para manter apenas categorias com transações
 
+          // Salva o resultado no cache por 1 hora (3600 segundos)
+          await redisService.set(cacheKey, resultado, 3600);
         // Retorna o resultado com as categorias e suas transações
         return res.status(200).json(resultado);
     } catch (error) {
