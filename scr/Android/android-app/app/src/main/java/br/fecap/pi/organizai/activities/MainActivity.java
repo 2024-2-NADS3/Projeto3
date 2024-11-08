@@ -131,8 +131,9 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView btnBeneficios = findViewById(R.id.btn_beneficios);
         btnBeneficios.setOnClickListener(view -> {
-            Intent intent = new Intent(this, ConstrucaoActivity.class);
-            startActivity(intent);
+            Intent i = new Intent(this, MeusBeneficiosActivity.class);
+            i.putExtra("nome", user.getNome());
+            startActivity(i);
         });
 
         //Implementacao do BottomSheetDialog para adicionar Receita e Despesa
