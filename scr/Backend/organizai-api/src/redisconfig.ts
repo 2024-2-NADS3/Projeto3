@@ -72,7 +72,23 @@ export class RedisService {
       throw error;
     }
   }
+
+    // Método para invalidar o cache de um usuário específico
+    async invalidateCache(key: string): Promise<void> {
+      await redisService.delete(key);
+    }
+  
+      // Método para atualizar o cache com novos dados
+       async updateCache(key: string, data: any, ttl: number = 3600): Promise<void> {
+        await redisService.set(key, data, ttl);
+      }
+  
+    // Método auxiliar para verificar se o cache está desatualizado
+      isCacheStale(cachedData: any, freshData: any): boolean {
+      return JSON.stringify(cachedData) !== JSON.stringify(freshData);
+    }
 }
+
 
 // Exporta a instância única do RedisService
 export const redisService = RedisService.getInstance();
