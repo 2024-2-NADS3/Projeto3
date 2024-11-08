@@ -89,39 +89,65 @@ export class UserController {
 
   findUserByEmail = async (req: Request, res: Response) => {
     try {
-        const { email } = req.params; // Captura o email do path (req.params)
-    
-        if (!email) {
-           return res.status(400).json({ message: "Email é obrigatório" });
-        }
+      const { email } = req.params;
 
-        // Tenta buscar do cache primeiro
-        const cachedUser = await redisService.get(`user:email:${email}`);
-        if (cachedUser) {
-          console.info("Busca por cache " + cachedUser)
-          return res.json(cachedUser);
-        }
-    
-        const user = await this.userRepository.findOneBy({ email });
-    
-        if (!user) {
-           return res.status(404).json({ message: "Usuário não encontrado" });
-        } else {
-          const userWithCategoriesAndQuiz = await this.userRepository.findOne({
-            where: { UserId: user.UserId },
-            relations: ['categorias', 'quiz', 'transacoes']
-          });
-
-           // Salva no cache por 1 hora (3600 segundos)
-          await redisService.set(`user:email:${email}`, userWithCategoriesAndQuiz, 3600);
-      
-          return res.json(userWithCategoriesAndQuiz);
-        }
-      } catch (error) {
-        console.error(error);
-         return res.status(500).json({ message: "Erro ao buscar usuário" });
+      if (!email) {
+        return res.status(400).json({ message: "Email é obrigatório" });
       }
+
+      // Tenta buscar do cache primeiro
+      const cachedUser = await redisService.get(`user:email:${email}`);
+      
+      // Sempre busca dados atualizados do banco
+      const freshUserData = await this.userRepository.findOne({
+        where: { email },
+        relations: ['categorias', 'quiz', 'transacoes']
+      });
+
+      if (!freshUserData) {
+        // Se o usuário não existe mais, invalida o cache
+        if (cachedUser) {
+          await this.invalidateUserCache(email);
+        }
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      // Verifica se os dados do cache estão desatualizados
+      if (cachedUser) {
+        const isCacheStale = this.isCacheStale(cachedUser, freshUserData);
+        if (isCacheStale) {
+          await this.updateUserCache(email, freshUserData);
+          return res.json(freshUserData);
+        }
+        return res.json(cachedUser);
+      }
+
+      // Se não há cache, cria um novo
+      await this.updateUserCache(email, freshUserData);
+      return res.json(freshUserData);
+
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error);
+      return res.status(500).json({ message: "Erro ao buscar usuário" });
     }
+  }
+
+   // Método para invalidar o cache de um usuário específico
+   private async invalidateUserCache(email: string): Promise<void> {
+    await redisService.delete(`user:email:${email}`);
+  }
+
+    // Método para atualizar o cache com novos dados
+    private async updateUserCache(email: string, userData: any, ttl: number = 3600): Promise<void> {
+      await redisService.set(`user:email:${email}`, userData, ttl);
+    }
+
+  // Método auxiliar para verificar se o cache está desatualizado
+  private isCacheStale(cachedData: any, freshData: any): boolean {
+    // Implemente sua lógica de comparação aqui
+    // Exemplo: comparar timestamps, versões ou dados específicos
+    return JSON.stringify(cachedData) !== JSON.stringify(freshData);
+  }
     
   autenticacaoUser = async (req: Request, res: Response) => {
     try {
@@ -239,13 +265,13 @@ export class UserController {
         if (!userId || !mes || !ano) {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
-        // Tenta buscar do cache primeiro
-      const cacheKey = `user:${userId}:tipo-${tipoCategoria}:mes-${mes}:ano-${ano}`;
-      const cachedResult = await redisService.get(cacheKey);
-      if (cachedResult) {
-        console.info("Busca por cache " + cacheKey)
-        return res.status(200).json(cachedResult);
-      }
+      //   // Tenta buscar do cache primeiro
+      // const cacheKey = `user:${userId}:tipo-${tipoCategoria}:mes-${mes}:ano-${ano}`;
+      // const cachedResult = await redisService.get(cacheKey);
+      // if (cachedResult) {
+      //   console.info("Busca por cache " + cacheKey)
+      //   return res.status(200).json(cachedResult);
+      // }
 
         // Busca as categorias com base no tipoCategoria
         const categorias = await this.catRepository.find({
@@ -289,8 +315,8 @@ export class UserController {
             })
             .filter(item => item.transacoes.length > 0); // Filtra para manter apenas categorias com transações
 
-          // Salva o resultado no cache por 1 hora (3600 segundos)
-          await redisService.set(cacheKey, resultado, 3600);
+          // // Salva o resultado no cache por 1 hora (3600 segundos)
+          // await redisService.set(cacheKey, resultado, 3600);
         // Retorna o resultado com as categorias e suas transações
         return res.status(200).json(resultado);
     } catch (error) {
