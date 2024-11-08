@@ -98,6 +98,7 @@ export class UserController {
         // Tenta buscar do cache primeiro
         const cachedUser = await redisService.get(`user:email:${email}`);
         if (cachedUser) {
+          console.info("Busca por cache " + cachedUser)
           return res.json(cachedUser);
         }
     
@@ -238,11 +239,11 @@ export class UserController {
         if (!userId || !mes || !ano) {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
-
         // Tenta buscar do cache primeiro
-      const cacheKey = `user:${userId}:transactions:tipo-${tipoCategoria}:mes-${mes}:ano-${ano}`;
+      const cacheKey = `user:${userId}:tipo-${tipoCategoria}:mes-${mes}:ano-${ano}`;
       const cachedResult = await redisService.get(cacheKey);
       if (cachedResult) {
+        console.info("Busca por cache " + cacheKey)
         return res.status(200).json(cachedResult);
       }
 
