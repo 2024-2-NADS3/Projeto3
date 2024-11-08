@@ -77,13 +77,13 @@ export class UserController {
   findAllUsers = async (req: Request, res: Response) => {
     try {
       const users = await this.userRepository.find();
-      if (!users || users.length === 0) {
-        res.status(404).json({ message: 'Usuários não encontrados' });
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'Usuários não encontrados' });
       }
-      res.json(users);
+      return res.json(users);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Erro ao buscar usuários' });
+      return res.status(500).json({ message: 'Erro ao buscar usuários' });
     }
   };
 
