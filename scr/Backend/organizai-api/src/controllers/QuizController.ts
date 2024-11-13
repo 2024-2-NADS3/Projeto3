@@ -2,6 +2,7 @@ import { QueryFailedError } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { Quiz } from "../entities/Quiz";
 import { Request, Response } from 'express';
+import { redisService } from "../redisconfig";
 
 export class QuizController {
     private quizRepository = AppDataSource.getRepository(Quiz);
@@ -65,6 +66,13 @@ export class QuizController {
             if (isNaN(userId)) {
                 return res.status(400).json({ message: "O ID do usuário deve ser um número válido." });
             }
+
+            const cachedData = await redisService.get(`elegibilidade-userId:${userId}`);
+            
+            if (cachedData) {
+                return res.status(200).json(cachedData);  // Retorna o cache corretamente
+            }
+
             const quiz = await this.quizRepository.findOneBy({ UserId: userId });
             if (!quiz) {
                 return res.status(404).json({ message: "Quiz não encontrado para o usuário especificado" });
@@ -76,6 +84,10 @@ export class QuizController {
                 beneficioIdoso: quiz.isOlder ?? false,
                 fomentoRural: quiz.rendaMensal && quiz.isRural ? quiz.rendaMensal <= 400 : false,
             };
+
+            // seta o cache por 5 minutos
+            await redisService.set(`elegibilidade-userId:${userId}`, {elegivel: elegibilidade}, 300)
+
             res.status(200).json({ elegivel: elegibilidade });
         } catch (error) {
             console.error("Erro ao verificar elegibilidade:", error);

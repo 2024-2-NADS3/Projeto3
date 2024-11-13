@@ -97,8 +97,8 @@ export class UserController {
         return res.status(400).json({ message: "Email é obrigatório" });
       }
 
-      // Tenta buscar do cache primeiro
-      const cachedUser = await redisService.get(`user:email:${email}`);
+      // // Tenta buscar do cache primeiro
+      // const cachedUser = await redisService.get(`user:email:${email}`);
       
       // Sempre busca dados atualizados do banco
       const freshUserData = await this.userRepository.findOne({
@@ -107,25 +107,25 @@ export class UserController {
       });
 
       if (!freshUserData) {
-        // Se o usuário não existe mais, invalida o cache
-        if (cachedUser) {
-          await redisService.invalidateCache(email);
-        }
+        // // Se o usuário não existe mais, invalida o cache
+        // if (cachedUser) {
+        //   await redisService.invalidateCache(email);
+        // }
         return res.status(404).json({ message: "Usuário não encontrado" });
       }
 
-      // Verifica se os dados do cache estão desatualizados
-      if (cachedUser) {
-        const isCacheStale = redisService.isCacheStale(cachedUser, freshUserData);
-        if (isCacheStale) {
-          await redisService.updateCache(email, freshUserData);
-          return res.json(freshUserData);
-        }
-        return res.json(cachedUser);
-      }
+      // // Verifica se os dados do cache estão desatualizados
+      // if (cachedUser) {
+      //   const isCacheStale = redisService.isCacheStale(cachedUser, freshUserData);
+      //   if (isCacheStale) {
+      //     await redisService.updateCache(email, freshUserData);
+      //     return res.json(freshUserData);
+      //   }
+      //   return res.json(cachedUser);
+      // }
 
-      // Se não há cache, cria um novo
-      await redisService.updateCache(email, freshUserData);
+      // // Se não há cache, cria um novo
+      // await redisService.updateCache(email, freshUserData);
       return res.json(freshUserData);
 
     } catch (error) {
