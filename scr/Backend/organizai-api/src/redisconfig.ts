@@ -56,6 +56,7 @@ export class RedisService {
   async get(key: string): Promise<any> {
     try {
       const value = await this.client.get(key);
+      console.info(`Busca pelo cache de key: ${key}`)
       return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error('Erro ao recuperar do cache:', error);
