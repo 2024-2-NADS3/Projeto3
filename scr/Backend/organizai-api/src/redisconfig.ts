@@ -46,6 +46,7 @@ export class RedisService {
       } else {
         await this.client.set(key, stringValue);
       }
+      console.info(`Cache de key: ${key} criado com sucesso`)
     } catch (error) {
       console.error('Erro ao salvar no cache:', error);
       throw error;
@@ -68,6 +69,7 @@ export class RedisService {
   async delete(key: string): Promise<void> {
     try {
       await this.client.del(key);
+      console.info(`Cache key: ${key} deletado`)
     } catch (error) {
       console.error('Erro ao deletar do cache:', error);
       throw error;

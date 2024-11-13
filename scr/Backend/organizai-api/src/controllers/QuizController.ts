@@ -21,6 +21,8 @@ export class QuizController {
                     // Se já houver um quiz e isAnswered for false, retorna 200 com uma mensagem apropriada
                     return res.status(204).json({ message: "Um quiz já existe para este usuário e não foi respondido." });
                 } else {
+                    //deleta o cache se existir pois o quiz foi alterado
+                    await redisService.delete(`elegibilidade-userId:${existingQuiz.UserId}`)
                     // Se isAnswered for true, faz o update do existingQuiz com o novo body
                     Object.assign(existingQuiz, quizDto);
                     const updatedQuiz = await this.quizRepository.save(existingQuiz);
