@@ -41,6 +41,7 @@
         app:srcCompat="@drawable/cadastro_unico" />
 
 
+    <!-- Nome do Benefício -->
     <View
         android:id="@+id/bg_card_beneficios"
         android:layout_width="match_parent"
@@ -49,10 +50,11 @@
         android:background="@drawable/retangulo_arredondado_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <!-- Nome do Benefício -->
     <TextView
         android:id="@+id/txt_nome_beneficio_detalhe"
         android:layout_width="wrap_content"
@@ -81,27 +83,40 @@
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/txt_nome_beneficio_detalhe"
-        app:layout_constraintBottom_toTopOf="@+id/txt_descricao_beneficio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.1" />
 
     <!-- Descrição do Benefício -->
-    <TextView
-        android:id="@+id/txt_descricao_beneficio"
-        android:layout_width="0dp"
+
+
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/saira"
-        android:text="Descrição do benefício vai aqui."
-        android:padding="15dp"
-        android:textAlignment="viewStart"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        android:textStyle="normal"
-        app:layout_constraintBottom_toBottomOf="@+id/bg_card_beneficios"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/bg_card_beneficios"
-        app:layout_constraintTop_toBottomOf="@+id/txt_elegibilidade_status" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_nome_beneficio_detalhe"
+        app:layout_constraintVertical_bias="0.09">
+
+        <TextView
+            android:id="@+id/txt_descricao_beneficio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/saira"
+            android:padding="15dp"
+            android:text="Descrição do benefício vai aqui."
+            android:textAlignment="viewStart"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="@+id/bg_card_beneficios"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/bg_card_beneficios"
+            app:layout_constraintTop_toBottomOf="@+id/txt_elegibilidade_status" />
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
