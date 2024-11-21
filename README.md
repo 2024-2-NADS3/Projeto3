@@ -16,6 +16,9 @@
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/4YJYWj1/Organiz-Ai.png" alt="Organiz-Ai" border="0" /></a>
 </p>
 
+# 🎨 Design
+<a href="https://www.figma.com/design/pcgUF3UIKvVihtgR60Srfb/Prot%C3%B3tipo-Projeto-ADS-3?node-id=0-1&t=cU5q6SxQyyQsoppQ-1">Figma</a>
+
 # 📜 Descrição:
 
 O OrganizAi é um aplicativo que te ajuda a controlar suas finanças de forma simples e intuitiva. Mas vai além disso: ele te conecta com benefícios sociais que você pode ter direito, personalizando a sua jornada financeira.
