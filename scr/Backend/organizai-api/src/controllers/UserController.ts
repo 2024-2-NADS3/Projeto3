@@ -7,6 +7,7 @@ import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { Quiz } from '../entities/Quiz';
 import { Transacao } from '../entities/Transacao';
+import { redisService } from '../redisconfig';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
@@ -76,41 +77,63 @@ export class UserController {
   findAllUsers = async (req: Request, res: Response) => {
     try {
       const users = await this.userRepository.find();
-      if (!users || users.length === 0) {
-        res.status(404).json({ message: 'Usuários não encontrados' });
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'Usuários não encontrados' });
       }
-      res.json(users);
+      return res.json(users);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Erro ao buscar usuários' });
+      return res.status(500).json({ message: 'Erro ao buscar usuários' });
     }
   };
 
   findUserByEmail = async (req: Request, res: Response) => {
+    // tem uma implementacao de cache aqui! Ela esta errada, serviu para que eu aprendesse. 
+    // Notei tambem que não temos uma forma muito eficiente de usar cache por enquanto. Os dados são muito multaveis no nosso sistema
     try {
-        const { email } = req.params; // Captura o email do path (req.params)
-    
-        if (!email) {
-           return res.status(400).json({ message: "Email é obrigatório" });
-        }
-    
-        const user = await this.userRepository.findOneBy({ email });
-    
-        if (!user) {
-           return res.status(404).json({ message: "Usuário não encontrado" });
-        } else {
-          const userWithCategoriesAndQuiz = await this.userRepository.findOne({
-            where: { UserId: user.UserId },
-            relations: ['categorias', 'quiz', 'transacoes']
-          });
-          return res.json(userWithCategoriesAndQuiz);
-        }
-      } catch (error) {
-        console.error(error);
-         return res.status(500).json({ message: "Erro ao buscar usuário" });
+      const { email } = req.params;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email é obrigatório" });
       }
+
+      // // Tenta buscar do cache primeiro
+      // const cachedUser = await redisService.get(`user:email:${email}`);
+      
+      // Sempre busca dados atualizados do banco
+      const freshUserData = await this.userRepository.findOne({
+        where: { email },
+        relations: ['categorias', 'quiz', 'transacoes']
+      });
+
+      if (!freshUserData) {
+        // // Se o usuário não existe mais, invalida o cache
+        // if (cachedUser) {
+        //   await redisService.invalidateCache(email);
+        // }
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      // // Verifica se os dados do cache estão desatualizados
+      // if (cachedUser) {
+      //   const isCacheStale = redisService.isCacheStale(cachedUser, freshUserData);
+      //   if (isCacheStale) {
+      //     await redisService.updateCache(email, freshUserData);
+      //     return res.json(freshUserData);
+      //   }
+      //   return res.json(cachedUser);
+      // }
+
+      // // Se não há cache, cria um novo
+      // await redisService.updateCache(email, freshUserData);
+      return res.json(freshUserData);
+
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error);
+      return res.status(500).json({ message: "Erro ao buscar usuário" });
     }
-    
+  }
+
   autenticacaoUser = async (req: Request, res: Response) => {
     try {
       const { email, senha } = req.body;
@@ -227,7 +250,7 @@ export class UserController {
         if (!userId || !mes || !ano) {
             return res.status(400).json({ message: 'Todos os parâmetros são obrigatórios.' });
         }
-
+        
         // Busca as categorias com base no tipoCategoria
         const categorias = await this.catRepository.find({
             where: {
@@ -240,8 +263,6 @@ export class UserController {
         if (categorias.length === 0) {
             return res.status(404).json({ message: 'Nenhuma categoria encontrada.' });
         }
-
-        console.info(categorias.map(cat => cat.Id)); // Loga os IDs das categorias
 
         // Buscar as transações vinculadas às categorias usando o 'Id'
         const transacoes = await AppDataSource.createQueryBuilder()
@@ -272,7 +293,6 @@ export class UserController {
             })
             .filter(item => item.transacoes.length > 0); // Filtra para manter apenas categorias com transações
 
-        // Retorna o resultado com as categorias e suas transações
         return res.status(200).json(resultado);
     } catch (error) {
         console.error(error);
