@@ -7,7 +7,7 @@ import { QueryFailedError } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { Quiz } from '../entities/Quiz';
 import { Transacao } from '../entities/Transacao';
-import { redisService } from '../redisconfig';
+// import { redisService } from '../redisconfig';
 
 export class UserController {
   private userRepository = AppDataSource.getRepository(User);
