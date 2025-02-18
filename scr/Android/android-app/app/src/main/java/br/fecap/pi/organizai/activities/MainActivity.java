@@ -314,45 +314,111 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout linearLayout = findViewById(R.id.linear_meses);
         Drawable connersRounded = ContextCompat.getDrawable(this, R.drawable.banner_conners_rounded);
         Typeface typeface = ResourcesCompat.getFont(this, R.font.saira);
-        String[] meses = {"JAN/24", "FEV/24", "MAR/24","ABR/24","MAI/24","JUN/24", "JUL/24","AGO/24", "SET/24", "OUT/24", "NOV/24", "DEZ/24",
-                "JAN/25", "FEV/25", "MAR/25","ABR/25","MAI/25", "JUN/25","JUL/25","AGO/25", "SET/25", "OUT/25", "NOV/25", "DEZ/25"};
+
+        // Obtém a data atual
         Calendar calendar = Calendar.getInstance();
-        int mesAtual = calendar.get(Calendar.MONTH);
+        int mesAtual = calendar.get(Calendar.MONTH); // 0-11
         int anoAtual = calendar.get(Calendar.YEAR);
-        final TextView[] selectedTextView = {null}; // Variável para armazenar a data selecionada
-        for (int i = 0; i < meses.length; i++) {
+
+        // Calcula os anos para exibição (ano anterior, atual e próximo)
+        int anoAnterior = anoAtual - 1;
+        int proximoAno = anoAtual + 1;
+
+        // Array para armazenar os nomes dos meses abreviados
+        String[] nomesMeses = {"JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"};
+
+        // Lista para armazenar todos os meses que serão exibidos
+        List<String> listaMeses = new ArrayList<>();
+        List<Integer> listaAnos = new ArrayList<>();
+        List<Integer> listaMesNumeros = new ArrayList<>();
+
+        // Adiciona meses do ano anterior
+        for (int i = 0; i < 12; i++) {
+            listaMeses.add(nomesMeses[i] + "/" + String.format("%02d", anoAnterior % 100));
+            listaAnos.add(anoAnterior);
+            listaMesNumeros.add(i + 1); // Mês como índice 1-12
+        }
+
+        // Adiciona meses do ano atual
+        for (int i = 0; i < 12; i++) {
+            listaMeses.add(nomesMeses[i] + "/" + String.format("%02d", anoAtual % 100));
+            listaAnos.add(anoAtual);
+            listaMesNumeros.add(i + 1); // Mês como índice 1-12
+        }
+
+        // Adiciona meses do próximo ano
+        for (int i = 0; i < 12; i++) {
+            listaMeses.add(nomesMeses[i] + "/" + String.format("%02d", proximoAno % 100));
+            listaAnos.add(proximoAno);
+            listaMesNumeros.add(i + 1); // Mês como índice 1-12
+        }
+
+        final TextView[] selectedTextView = {null}; // Variável para armazenar o TextView selecionado
+
+        // Cria os TextViews para cada mês
+        for (int i = 0; i < listaMeses.size(); i++) {
             TextView textView = new TextView(this);
-            textView.setId(i < 12 ? (anoAtual * 100 + i + 1) : ((anoAtual + 1) * 100 + (i - 11))); // Gera um ID automático
-            textView.setTag(meses[i]); // Armazena o nome do mês como uma tag
-            textView.setText(meses[i]);
+
+            // Obter o ano e mês atual da iteração
+            int ano = listaAnos.get(i);
+            int mes = listaMesNumeros.get(i);
+
+            // Define o ID como ano * 100 + mes (por exemplo: 202502 para fevereiro de 2025)
+            int id = ano * 100 + mes;
+            textView.setId(id);
+
+            // Configuração de layout com margens
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            // Adiciona margens laterais (esquerda, topo, direita, baixo)
+            params.setMargins(-5, 0, 2, 0);
+            textView.setLayoutParams(params);
+
+            textView.setTag(listaMeses.get(i)); // Armazena o nome do mês como uma tag
+            textView.setText(listaMeses.get(i));
             textView.setTextSize(16);
-            textView.setPadding(35, 0, 35, 0);
+            textView.setPadding(45, 0, 45, 0);
             textView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
             textView.setTypeface(typeface, Typeface.BOLD);
 
-            // Verificar se o TextView corresponde ao mês atual
-            if ((i % 12) == mesAtual && (i < 12 && anoAtual == 2024 || i >= 12 && anoAtual == 2025)) {
+            // Verificar se este é o mês atual
+            boolean isCurrentMonth = (ano == anoAtual && mes == (mesAtual + 1));
+
+            if (isCurrentMonth) {
                 textView.setBackground(connersRounded);
                 textView.setTextColor(Color.WHITE);
                 selectedTextView[0] = textView; // Define o mês atual como selecionado inicialmente
-                textView.post(() -> horizontalScrollView[0].smoothScrollTo(textView.getLeft(), 0));
-                setDataSelecionada(textView.getId());
+
+                // Scroll para o mês atual
+                final int index = i; // Precisa ser final para usar em lambda
+                textView.post(() -> {
+                    // Calcular a posição aproximada no scrollview
+                    int position = index * textView.getWidth();
+                    horizontalScrollView[0].smoothScrollTo(position, 0);
+                });
+
+                setDataSelecionada(id);
+                Log.d("DataSelecionada", "Mês atual selecionado: " + id);
             }
 
             // Adicionar OnClickListener para alterar o background quando a data for clicada
             textView.setOnClickListener(v -> {
                 if (selectedTextView[0] != null) {
                     // Reseta o background da data previamente selecionada
-                    selectedTextView[0].setBackground(null); // Remove o background ou substitua por outro estilo
-                    selectedTextView[0].setTextColor(Color.BLACK); // Restaura a cor do texto original
+                    selectedTextView[0].setBackground(null);
+                    selectedTextView[0].setTextColor(Color.BLACK);
                 }
                 // Define o novo TextView como selecionado
                 textView.setBackground(connersRounded);
                 textView.setTextColor(Color.WHITE);
                 selectedTextView[0] = textView; // Atualiza a variável para a nova seleção
                 setDataSelecionada(textView.getId());
+                Log.d("DataSelecionada", "Novo mês selecionado: " + textView.getId());
                 buscarCategoriasByParam(user.getUserId(), getTipoCategoriaAtual());
             });
+
             linearLayout.addView(textView);
         }
     }
