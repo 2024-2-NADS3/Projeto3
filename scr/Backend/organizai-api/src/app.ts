@@ -4,6 +4,7 @@ import cors from 'cors';
 import { AppDataSource } from "./data-source"
 import userRoutes from './routes/UserRoutes';
 import quizRoutes from './routes/QuizRoutes';
+import assistentRoutes from './routes/AssistentRoutes'
 import transacaoRoutes from './routes/TransacaoRoutes';
 import catRoutes from './routes/CategoriaRoutes';
 import crypto from 'crypto';
@@ -43,6 +44,8 @@ AppDataSource.initialize().then(async () => {
     app.use('/transacao', transacaoRoutes);
 
     app.use('/categoria', catRoutes);
+
+    app.use('/assistent', assistentRoutes)
 
     
     app.listen(port, () => console.log(`Server running on port ${port}`));
