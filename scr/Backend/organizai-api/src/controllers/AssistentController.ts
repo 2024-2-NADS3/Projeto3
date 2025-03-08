@@ -55,8 +55,8 @@ export class AssistentController {
 
     private async gerarChamadaDeEstimativaDePreco(origem: string, destino: string): Promise<string> {
         try {
-            const distancia = await this.azureMaps.calcularDistancia(origem, destino);
-            const mensagem = `Minha localização atual é ${origem} e quero ir até ${destino}. Esse percurso tem uma distância de ${distancia} km. Me dê uma estimativa de preço entre o serviço da Uber e da 99 e me diga qual vale mais a pena.`;
+            const {distancia, duracao} = await this.azureMaps.calcularDistancia(origem, destino);
+            const mensagem = `Minha localização atual é ${origem} e quero ir até ${destino}. Esse percurso tem uma distância de ${distancia.toFixed(2)} km e levará cerca de ${duracao.toFixed(2)} minutos considerando o tráfego atual. Me dê uma estimativa de preço entre Uber e 99 e me diga qual vale mais a pena.`;
 
             return await this.enviarParaIA(mensagem, SYSTEM_MESSAGES.CORRIDAS);
 
@@ -85,7 +85,7 @@ export class AssistentController {
             const content = response.body?.choices?.[0]?.message?.content || "";
 
             // Removendo os pensamentos dentro da tag <think>
-            return content.replace(/<think>[\s\S]*?<\/think>\n*/g, "").trim();
+            return content.replace(/<think>[\s\S]*?<\/think>\n*/g, "").replace(/\n/g, "<br>").trim();
 
         } catch (error) {
             console.error('Erro ao enviar mensagem para IA:', error);

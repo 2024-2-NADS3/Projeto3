@@ -1,5 +1,9 @@
 import axios from "axios";
 
+interface ResponseMap{
+    distancia: number,
+    duracao: number
+}
 export class AzureMapsCLient {
 
     private readonly subscriptionKey: string;
@@ -19,7 +23,7 @@ export class AzureMapsCLient {
      * @param origem Endereço de origem
      * @param destino Endereço de destino
      */
-    async calcularDistancia(origem: string, destino: string): Promise<number> {
+    async calcularDistancia(origem: string, destino: string): Promise<ResponseMap> {
         try {
             // Obter coordenadas dos endereços
             const origemCoords = await this.geocodificarEndereco(origem);
@@ -37,9 +41,12 @@ export class AzureMapsCLient {
             
             // Pegar a distância em metros
             const distanceInMeters = response.data.routes[0].summary.lengthInMeters;
+            const duracaoInSeconds = response.data.routes[0].summary.travelTimeInSeconds 
+            
+            const distancia = distanceInMeters / 1000
+            const duracao = duracaoInSeconds / 60
 
-            // Converter para quilômetros
-            return distanceInMeters / 1000;
+            return {distancia, duracao};
             
         } catch (error) {
             console.error("Erro ao calcular distância:", error);
