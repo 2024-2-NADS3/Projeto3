@@ -1,0 +1,74 @@
+import axios from "axios";
+
+export class AzureMapsCLient {
+
+    private readonly subscriptionKey: string;
+    private readonly baseUrl: string;
+
+    constructor() {
+        this.subscriptionKey = process.env.AZURE_MAPS_KEY || "";
+        this.baseUrl = 'https://atlas.microsoft.com';
+       
+        if (!this.subscriptionKey) {
+            throw new Error("A chave da API do Azure Maps não foi encontrada no .env.");
+        }
+    }
+
+    /**
+     * Calcula a distância entre dois endereços em quilômetros.
+     * @param origem Endereço de origem
+     * @param destino Endereço de destino
+     */
+    async calcularDistancia(origem: string, destino: string): Promise<number> {
+        try {
+            // Obter coordenadas dos endereços
+            const origemCoords = await this.geocodificarEndereco(origem);
+            const destinoCoords = await this.geocodificarEndereco(destino);
+
+            if (!origemCoords || !destinoCoords) {
+                throw new Error("Não foi possível obter as coordenadas dos endereços.");
+            }
+
+            // Construir a URL da API de Roteamento do Azure Maps
+            const url = `${this.baseUrl}/route/directions/json?api-version=1.0&subscription-key=${this.subscriptionKey}&query=${origemCoords.lat},${origemCoords.lon}:${destinoCoords.lat},${destinoCoords.lon}`;
+
+            // Fazer a requisição
+            const response = await axios.get(url);
+            
+            // Pegar a distância em metros
+            const distanceInMeters = response.data.routes[0].summary.lengthInMeters;
+
+            // Converter para quilômetros
+            return distanceInMeters / 1000;
+            
+        } catch (error) {
+            console.error("Erro ao calcular distância:", error);
+            throw new Error("Erro ao calcular a distância entre os endereços.");
+        }
+    }
+
+    /**
+     * Converte um endereço em coordenadas geográficas (latitude e longitude).
+     * @param endereco Endereço a ser convertido
+     */
+    private async geocodificarEndereco(endereco: string): Promise<{ lat: number; lon: number } | null> {
+        try {
+            const url = `${this.baseUrl}/search/address/json?api-version=1.0&subscription-key=${this.subscriptionKey}&query=${encodeURIComponent(endereco)}`;
+            
+            const response = await axios.get(url);
+            
+            const results = response.data.results;
+            
+            if (results.length === 0) return null;
+
+            return {
+                lat: results[0].position.lat,
+                lon: results[0].position.lon,
+            };
+        } catch (error) {
+            console.error("Erro ao geocodificar endereço:", error);
+            return null;
+        }
+    }
+    
+}

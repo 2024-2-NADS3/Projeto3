@@ -1,58 +1,47 @@
 import { Request, Response } from 'express';
 import ModelClient from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
+import { AzureMapsCLient } from "../client/AzureMapsClient";
+import { SYSTEM_MESSAGES } from '../config';
 
 interface Message {
     role: string;
-    content: string;
+    content: string | undefined;
 }
 
 export class AssistentController {
-    private client: any; 
+    private client: any;
+    private azureMaps: AzureMapsCLient;
 
     constructor() {
-      // @ts-ignore - Ignorando temporariamente o erro de tipagem do construtor
+        // @ts-ignore - Ignorando temporariamente o erro de tipagem do construtor
         this.client = new ModelClient(
             process.env.AZURE_INFERENCE_SDK_ENDPOINT || "",
             new AzureKeyCredential(process.env.AZURE_INFERENCE_SDK_KEY || "")
         );
+        this.azureMaps = new AzureMapsCLient();
     }
 
     public execute = async (req: Request, res: Response): Promise<void> => {
         try {
-            
-          // Verifica se existe uma mensagem no body
-            if (!req.body.message) {
-              res.status(400).json({
-                  success: false,
-                  error: 'Message is required in request body'
-              });
-              return;
-          }
+            const { mensagem, origem, destino } = req.body;
+            let respostaIA = '';
 
-          const messages: Message[] = [
-              { role: "system", content: "Você é um assistente que da respostas sucintas em português sem emojis." },
-              { role: "user", content: req.body.message }
-          ];
+            if (origem && destino) {
+                respostaIA = await this.gerarChamadaDeEstimativaDePreco(origem, destino);
+            } else if (mensagem) {
+                respostaIA = await this.enviarParaIA(mensagem, SYSTEM_MESSAGES.FINANCAS);
+            } else {
+                res.status(400).json({
+                    success: false,
+                    error: 'Uma mensagem ou um par de coordenadas (origem e destino) são necessários para fazer a requisição.'
+                });
+                return;
+            }
 
-            const response = await this.client.path("chat/completions").post({
-                body: {
-                    messages: messages,
-                    max_tokens: 1000,
-                    model: process.env.DEPLOYMENT_NAME || "DeepSeek-R1",
-                }
-            });
-            // Pegando apenas a resposta final
-            const content = response.body?.choices?.[0]?.message?.content || "";
-
-            // Removendo os pensamentos dentro da tag <think>
-            const cleanContent = content.replace(/<think>[\s\S]*?<\/think>\n*/g, "").trim();
-
-           console.info(content)
-           
             res.status(200).json({
                 success: true,
-                data: cleanContent
+                data: respostaIA
             });
 
         } catch (error) {
@@ -61,6 +50,46 @@ export class AssistentController {
                 success: false,
                 error: 'Erro ao processar a requisição'
             });
+        }
+    };
+
+    private async gerarChamadaDeEstimativaDePreco(origem: string, destino: string): Promise<string> {
+        try {
+            const distancia = await this.azureMaps.calcularDistancia(origem, destino);
+            const mensagem = `Minha localização atual é ${origem} e quero ir até ${destino}. Esse percurso tem uma distância de ${distancia} km. Me dê uma estimativa de preço entre o serviço da Uber e da 99 e me diga qual vale mais a pena.`;
+
+            return await this.enviarParaIA(mensagem, SYSTEM_MESSAGES.CORRIDAS);
+
+        } catch (error) {
+            console.error('Erro ao calcular estimativa de preço:', error);
+            throw error;
+        }
+    }
+
+    private async enviarParaIA(mensagem: string, systemMessage: string): Promise<string> {
+        try {
+            const messages: Message[] = [
+                { role: "system", content: systemMessage },
+                { role: "user", content: mensagem }
+            ];
+
+            const response = await this.client.path("chat/completions").post({
+                body: {
+                    messages: messages,
+                    max_tokens: 1000,
+                    model: process.env.DEPLOYMENT_NAME || "DeepSeek-R1",
+                }
+            });
+
+            // Pegando apenas a resposta final
+            const content = response.body?.choices?.[0]?.message?.content || "";
+
+            // Removendo os pensamentos dentro da tag <think>
+            return content.replace(/<think>[\s\S]*?<\/think>\n*/g, "").trim();
+
+        } catch (error) {
+            console.error('Erro ao enviar mensagem para IA:', error);
+            throw error;
         }
     }
 }
