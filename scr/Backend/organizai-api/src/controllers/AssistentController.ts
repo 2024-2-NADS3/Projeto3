@@ -3,6 +3,7 @@ import ModelClient from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import { AzureMapsCLient } from "../client/AzureMapsClient";
 import { SYSTEM_MESSAGES } from '../config';
+import { compareSync } from 'bcryptjs';
 
 interface Message {
     role: string;
@@ -21,6 +22,35 @@ export class AssistentController {
         );
         this.azureMaps = new AzureMapsCLient();
     }
+
+public findDistance = async (req: Request, res: Response): Promise<void> => {
+        const { origem, destino } = req.query;
+
+        console.log("INICIO DA REQUISICAO")
+        console.log(origem)
+        console.log(destino)
+
+        if (!origem || !destino) {
+            res.status(400).json({ error: 'Parâmetros "origem" e "destino" são obrigatórios.' });
+            return;
+        }
+
+        try {
+            const { distancia, duracao, origemLat, origemLong, destLat, destLong } = await this.azureMaps.calcularDistancia(origem as string, destino as string);
+            
+            res.status(200).json({
+                distancia_km: distancia,
+                duracao_min: duracao,
+                origemLat: origemLat,
+                origemLong: origemLong,
+                destLat: destLat,
+                destLong: destLong
+
+            });
+        } catch (error) {
+            res.status(500).json({ erro: 'Erro ao calcular a distância.' });
+        }
+    };
 
     public execute = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -85,11 +115,8 @@ export class AssistentController {
                 }
             });
 
-            // Pegando apenas a resposta final
             const content = response.body?.choices?.[0]?.message?.content || "";
-
-            console.info(content)
-            // Removendo os pensamentos dentro da tag <think>
+            
             return content.replace(/<think>[\s\S]*?<\/think>\n*/g, "").replace(/\n/g, "<br>").trim();
 
         } catch (error) {

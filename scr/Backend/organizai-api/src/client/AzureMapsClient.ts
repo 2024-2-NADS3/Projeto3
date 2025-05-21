@@ -1,25 +1,29 @@
 import axios from "axios";
 
-interface ResponseMap{
-    distancia: number,
-    duracao: number
+interface ResponseMap {
+    distancia: number;
+    duracao: number;
+    origemLat: number;
+    origemLong: number;
+    destLat: number;
+    destLong: number;
 }
-export class AzureMapsCLient {
 
+export class AzureMapsCLient {
     private readonly subscriptionKey: string;
     private readonly baseUrl: string;
 
     constructor() {
         this.subscriptionKey = process.env.AZURE_MAPS_KEY || "";
         this.baseUrl = 'https://atlas.microsoft.com';
-       
+
         if (!this.subscriptionKey) {
             throw new Error("A chave da API do Azure Maps não foi encontrada no .env.");
         }
     }
 
     /**
-     * Calcula a distância entre dois endereços em quilômetros.
+     * Calcula a distância entre dois endereços em quilômetros e retorna dados detalhados.
      * @param origem Endereço de origem
      * @param destino Endereço de destino
      */
@@ -38,16 +42,23 @@ export class AzureMapsCLient {
 
             // Fazer a requisição
             const response = await axios.get(url);
-            
-            // Pegar a distância em metros
-            const distanceInMeters = response.data.routes[0].summary.lengthInMeters;
-            const duracaoInSeconds = response.data.routes[0].summary.travelTimeInSeconds 
-            
-            const distancia = distanceInMeters / 1000
-            const duracao = duracaoInSeconds / 60
 
-            return {distancia, duracao};
-            
+            // Pegar a distância em metros e duração em segundos
+            const distanceInMeters = response.data.routes[0].summary.lengthInMeters;
+            const duracaoInSeconds = response.data.routes[0].summary.travelTimeInSeconds;
+
+            const distancia = Math.round((distanceInMeters / 1000) * 100) / 100; // km, 2 casas decimais
+            const duracao = Math.round((duracaoInSeconds / 60) * 100) / 100;     // minutos, 2 casas decimais
+
+            return {
+                distancia,
+                duracao,
+                origemLat: origemCoords.lat,
+                origemLong: origemCoords.lon,
+                destLat: destinoCoords.lat,
+                destLong: destinoCoords.lon
+            };
+
         } catch (error) {
             console.error("Erro ao calcular distância:", error);
             throw new Error("Erro ao calcular a distância entre os endereços.");
@@ -63,9 +74,8 @@ export class AzureMapsCLient {
             const url = `${this.baseUrl}/search/address/json?api-version=1.0&subscription-key=${this.subscriptionKey}&query=${encodeURIComponent(endereco)}`;
             
             const response = await axios.get(url);
-            
             const results = response.data.results;
-            
+
             if (results.length === 0) return null;
 
             return {
@@ -77,5 +87,4 @@ export class AzureMapsCLient {
             return null;
         }
     }
-    
 }
